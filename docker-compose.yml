@@ -2,16 +2,10 @@ version: "3"
 services:
  app:
   build: .
-  container_name: test
+  container_name: sdvl_dev
   volumes:
-   - ./app:/var/www/html/app
+   - ./app:/app
   ports:
-   - "8888:80"
+   - "5000:80"
   tty:
    true
-  deploy:
-     resources:
-      reservations:
-       devices:
-        - driver: nvidia
-          capabilities: [gpu]

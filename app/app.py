@@ -10,7 +10,6 @@ auth = firebase.auth()
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.urandom(24)
 
-
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'GET':
@@ -37,7 +36,20 @@ def logout():
     del session['usr']
     return redirect(url_for('login'))
 
+@app.route("/select", methods=['GET'])
+def select():
+    usr = session.get('usr')
+    return render_template("select.html", usr=usr)
 
-if __name__ == "__main__":
-    app.debug = True
-    app.run(port=8888)
+@app.route("/remember", methods=['GET'])
+def remember():
+    usr = session.get('usr')
+    return render_template("remember.html", usr=usr)
+
+@app.route("/association", methods=['GET'])
+def association():
+    usr = session.get('usr')
+    return render_template("association.html", usr=usr)
+
+if __name__=="__main__":
+    app.run(host="0.0.0.0", port=80, debug=True)
