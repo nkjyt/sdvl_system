@@ -7,7 +7,7 @@ with open("firebaseConfig.json") as f:
 firebase = pyrebase.initialize_app(firebaseConfig)
 auth = firebase.auth()
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='./static')
 app.config['SECRET_KEY'] = os.urandom(24)
 
 @app.route('/login', methods=['GET', 'POST'])

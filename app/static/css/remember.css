@@ -1,0 +1,41 @@
+.header{
+    vertical-align: top;
+    align-items: center;
+    text-align: center;
+    background: #F8DC7B;
+}
+
+.font30px{
+    font-size: 30px;
+}
+
+.funcBody{
+    margin: 20px;
+    align-items: center;
+    display: flex;
+    flex-flow: column;
+    justify-content: center;
+}
+
+.flashcard{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 12px 19px;
+    margin: 10px;
+
+    width: 338px;
+    height: 90px;
+
+    background: #F8DC7B;
+    mix-blend-mode: normal;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+}
+
+
+.button_area{
+    box-sizing: border-box;
+    flex-direction: row;
+    align-items: stretch;
+    display: flex;
+}
