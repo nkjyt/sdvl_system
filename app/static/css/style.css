@@ -39,3 +39,13 @@
     align-items: stretch;
     display: flex;
 }
+
+.image img{
+    width: 300;
+    height: auto;
+}
+
+.wrap-image img{
+    width: 300;
+    height: auto;
+}
