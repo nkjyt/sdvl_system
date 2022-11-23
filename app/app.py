@@ -41,15 +41,24 @@ def select():
     usr = session.get('usr')
     return render_template("select.html", usr=usr)
 
-@app.route("/remember", methods=['GET'])
-def remember():
+@app.route("/memorize", methods=['GET'])
+def memorize():
     usr = session.get('usr')
-    return render_template("remember.html", usr=usr)
+    return render_template("memorize.html", usr=usr)
 
-@app.route("/association", methods=['GET'])
+@app.route("/association", methods=['GET', 'POST'])
 def association():
-    usr = session.get('usr')
-    return render_template("association.html", usr=usr)
+    eng = "ferocious"
+    jpn = "獰猛な"
+    if request.method == 'GET':
+        usr = session.get('usr')
+        return render_template("association.html", word = eng)
+    else:
+        if eng==request.form['word']:
+            w = jpn
+        else:
+            w = eng
+        return render_template("association.html", word = w)
 
 if __name__=="__main__":
     app.run(host="0.0.0.0", port=80, debug=True)
