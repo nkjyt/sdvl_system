@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify, render_template, redirect, url_for, session
 import pyrebase
 import json, os
+import database.database as database
 
 with open("firebaseConfig.json") as f:
     firebaseConfig = json.loads(f.read())
@@ -9,6 +10,8 @@ auth = firebase.auth()
 
 app = Flask(__name__, static_folder='./static')
 app.config['SECRET_KEY'] = os.urandom(24)
+
+db = database.Database()
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
