@@ -19,10 +19,12 @@
       <img src="/static/assets/ferocious3.png" alt="img">
     </div>
 
-    <button class="flashcard" onclick="">
-      <h1 class="card-title">ferocious</h1>
-      <h6 class="card-subtitle text-muted">タップしてめくる</h6>
-    </button>
+    <form action="/association">
+      <button class="flashcard" type="submit" name="word" value={{word}} formmethod="POST">
+        <h1 class="card-title">{{word}}</h1>
+        <h6 class="card-subtitle text-muted">タップしてめくる</h6>
+      </button>
+    </form>
 
     <div class="button_area">
       <button type="button" class="btn btn-danger m-4">not remember</button>
