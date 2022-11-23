@@ -23,6 +23,7 @@ def login():
     try:
         user = auth.sign_in_with_email_and_password(email, password)
         session['usr'] = email
+        session['uid'] = auth.get_account_info(user['idToken'])['users'][0]['localId']
         return redirect(url_for('index'))
     except:
         return render_template("login.html", msg="メールアドレスまたはパスワードが間違っています。")
@@ -44,10 +45,22 @@ def select():
     usr = session.get('usr')
     return render_template("select.html", usr=usr)
 
-@app.route("/memorize", methods=['GET'])
+@app.route("/memorize", methods=['GET', 'POST'])
 def memorize():
-    usr = session.get('usr')
-    return render_template("memorize.html", usr=usr)
+
+    db.read(UID=session['uid'])
+
+    eng = "ferocious"
+    jpn = "獰猛な"
+    if request.method == 'GET':
+        usr = session.get('usr')
+        return render_template("memorize.html", word = eng)
+    else:
+        if eng==request.form['word']:
+            w = jpn
+        else:
+            w = eng
+        return render_template("memorize.html", word = w)
 
 @app.route("/association", methods=['GET', 'POST'])
 def association():

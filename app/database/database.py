@@ -11,5 +11,5 @@ class Database():
     
     def read(self, UID):
         results = self.db.child("memorize").child(UID)
-        print(results)
+        print(results.get().val())
         return results
