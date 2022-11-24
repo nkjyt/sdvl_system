@@ -25,8 +25,11 @@
     </form>
 
     <div class="button_area">
-      <button type="button" class="btn btn-danger m-4">not remember</button>
-      <button type="button" class="btn btn-success m-4">remembered</button>
+      <form action="/memorize">
+        <button type="submit" name="mode" value="next" formmethod="POST" class="btn btn-danger m-4">not remember</button>
+        <button type="submit" name="mode" value="next" formmethod="POST" class="btn btn-success m-4">remembered</button>
+      </form>
+     
     </div>
 
   

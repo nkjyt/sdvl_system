@@ -11,7 +11,7 @@ auth = firebase.auth()
 app = Flask(__name__, static_folder='./static')
 app.config['SECRET_KEY'] = os.urandom(24)
 
-db = database.Database()
+db = database.memorizeDB()
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -48,19 +48,23 @@ def select():
 @app.route("/memorize", methods=['GET', 'POST'])
 def memorize():
     #初期化
-    data = db.read(UID='OTattFQ8vHf1iuPZv94sE3Gj3G22')
-
-    eng = data[0]['word']
-    jpn = data[0]['jpn']
+    db.getUserWords(UID='OTattFQ8vHf1iuPZv94sE3Gj3G22')
 
     if request.method == 'GET':
-        usr = session.get('usr')
-        return render_template("memorize.html", word = eng)
+        w = db.eng
+        return render_template("memorize.html", word = w)
     else:
-        if eng==request.form['word']:
-            w = jpn
-        else:
-            w = eng
+        #rememberボタンを押したとき
+        try:
+            if request.form['mode'] == 'next':
+                db.nextWord()
+                print(db.eng)
+                w = db.eng
+        except:
+            if db.eng==request.form['word']:
+                w = db.jpn
+            else:
+                w = db.eng
         return render_template("memorize.html", word = w)
 
 @app.route("/association", methods=['GET', 'POST'])
