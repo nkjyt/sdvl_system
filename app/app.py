@@ -47,11 +47,12 @@ def select():
 
 @app.route("/memorize", methods=['GET', 'POST'])
 def memorize():
+    #初期化
+    data = db.read(UID='OTattFQ8vHf1iuPZv94sE3Gj3G22')
 
-    db.read(UID=session['uid'])
+    eng = data[0]['word']
+    jpn = data[0]['jpn']
 
-    eng = "ferocious"
-    jpn = "獰猛な"
     if request.method == 'GET':
         usr = session.get('usr')
         return render_template("memorize.html", word = eng)

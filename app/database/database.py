@@ -8,8 +8,9 @@ class Database():
             firebaseConfig = json.loads(f.read())
         firebase = pyrebase.initialize_app(firebaseConfig)
         self.db = firebase.database()
+        self.memorize = None
     
     def read(self, UID):
-        results = self.db.child("memorize").child(UID)
-        print(results.get().val())
-        return results
+        if self.memorize == None:
+            self.memorize = self.db.child("memorize").child(UID)
+        return self.memorize.get().val()
