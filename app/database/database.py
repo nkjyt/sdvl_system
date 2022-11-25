@@ -53,9 +53,7 @@ class memorizeDB():
         return self.eng
 
     def nextWord(self):
-        print(f"{self.index}番目：最大{len(self.data)}")
         if self.index < len(self.data) -1:
-            print(f"{self.index}番目：最大{len(self.data)}")
             self.index += 1
             self.eng = self.data[self.index]['word']
             self.jpn = self.data[self.index]['jpn']

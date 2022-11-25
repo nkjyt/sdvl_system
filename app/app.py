@@ -49,9 +49,10 @@ def select():
 def memorize():
     if request.method == 'GET':
         w = db.getUserWords(UID='OTattFQ8vHf1iuPZv94sE3Gj3G22')
+        path = f'static/assets/{db.UID}/{db.eng}'
         if w == '':
             return redirect(url_for('select'))
-        return render_template("memorize.html", word = w)
+        return render_template("memorize.html", word = w, path=path)
     else:
         print(request.form['mode'].split(','))
         act, query = request.form['mode'].split(',')
@@ -81,7 +82,8 @@ def memorize():
                 w = db.jpn
             else:
                 w = db.eng """
-        return render_template("memorize.html", word = w)
+        path = f'static/assets/{db.UID}/{db.eng}'
+        return render_template("memorize.html", word = w, path=path)
 
 @app.route("/association", methods=['GET', 'POST'])
 def association():
