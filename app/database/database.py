@@ -71,6 +71,8 @@ class memorizeDB():
         self.data[self.index]['not_remembered'] += 1
         self.db.child("memorize").child(self.UID).child(self.data[self.index]['word']).update(self.data[self.index])
 
+
+
 class associationDB():
     def __init__(self):
         with open("firebaseConfig.json") as f:
@@ -79,29 +81,29 @@ class associationDB():
         self.db = firebase.database()
         self.data = []
         self.index = 0
-    
+        self.eng = ''
+        self.jpn = ''
+        self.pos = ''
+
     def getUserWords(self, UID):
         self.UID = UID
         self.index = 0
+        self.imgName = []
         if self.data == []:
             print("データベースから初期化します")
             for words in self.db.child("association").child(self.UID).get().each():
-                if words.val()['show']:
-                    self.data.append(words.val())
-        else:
-            print("ローカルから読みこみます")
-            tmp = []
-            for i, v in enumerate(self.data):
-                if self.data[i]['show']:
-                    tmp.append(v)
-            self.data = tmp
+                self.data.append(words.val())
         print(self.data)
         if self.data == []:
             return ''
+
+        print(self.data[self.index]['img'])
+        for img in self.data[self.index]['img'].keys():
+            self.imgName.append(img)
+
         random.shuffle(self.data)
         self.eng = self.data[self.index]['word']
         self.jpn = self.data[self.index]['jpn']
-        print(self.data)
 
         return self.eng
 
