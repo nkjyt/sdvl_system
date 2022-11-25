@@ -47,24 +47,39 @@ def select():
 
 @app.route("/memorize", methods=['GET', 'POST'])
 def memorize():
-    #初期化
-    db.getUserWords(UID='OTattFQ8vHf1iuPZv94sE3Gj3G22')
-
     if request.method == 'GET':
+        db.getUserWords(UID='OTattFQ8vHf1iuPZv94sE3Gj3G22')
         w = db.eng
         return render_template("memorize.html", word = w)
     else:
-        #rememberボタンを押したとき
-        try:
-            if request.form['mode'] == 'next':
-                db.nextWord()
-                print(db.eng)
+        print(request.form['mode'].split(','))
+        act, query = request.form['mode'].split(',')
+        if act == "translate":
+            if db.eng==query:
+                w = db.jpn
+            else:
                 w = db.eng
+        #rememberボタンを押したとき
+        elif act == "next":
+            if query == "remembered":
+                db.remembered()
+            else:
+                db.notRemembered()
+            if db.nextWord():
+                w = db.eng
+            else:
+                return render_template("select.html")
+        """ try:
+            if request.form['mode'] == 'next':
+                if db.nextWord():
+                    w = db.eng
+                else:
+                    return render_template("select.html")
         except:
             if db.eng==request.form['word']:
                 w = db.jpn
             else:
-                w = db.eng
+                w = db.eng """
         return render_template("memorize.html", word = w)
 
 @app.route("/association", methods=['GET', 'POST'])
