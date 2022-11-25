@@ -71,17 +71,7 @@ def memorize():
                 w = db.eng
             else:
                 return render_template("select.html")
-        """ try:
-            if request.form['mode'] == 'next':
-                if db.nextWord():
-                    w = db.eng
-                else:
-                    return render_template("select.html")
-        except:
-            if db.eng==request.form['word']:
-                w = db.jpn
-            else:
-                w = db.eng """
+
         path = f'static/assets/{db.UID}/{db.eng}'
         return render_template("memorize.html", word = w, path=path)
 
