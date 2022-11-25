@@ -48,8 +48,9 @@ def select():
 @app.route("/memorize", methods=['GET', 'POST'])
 def memorize():
     if request.method == 'GET':
-        db.getUserWords(UID='OTattFQ8vHf1iuPZv94sE3Gj3G22')
-        w = db.eng
+        w = db.getUserWords(UID='OTattFQ8vHf1iuPZv94sE3Gj3G22')
+        if w == '':
+            return redirect(url_for('select'))
         return render_template("memorize.html", word = w)
     else:
         print(request.form['mode'].split(','))

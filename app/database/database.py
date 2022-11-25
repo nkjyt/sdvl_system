@@ -29,6 +29,7 @@ class memorizeDB():
     
     def getUserWords(self, UID):
         self.UID = UID
+        self.index = 0
         if self.data == []:
             print("データベースから初期化します")
             for words in self.db.child("memorize").child(self.UID).get().each():
@@ -41,12 +42,15 @@ class memorizeDB():
                 if self.data[i]['show']:
                     tmp.append(v)
             self.data = tmp
-        
-        random.shuffle(self.data)
         print(self.data)
+        if self.data == []:
+            return ''
+        random.shuffle(self.data)
         self.eng = self.data[self.index]['word']
         self.jpn = self.data[self.index]['jpn']
         print(self.data)
+
+        return self.eng
 
     def nextWord(self):
         print(f"{self.index}番目：最大{len(self.data)}")
