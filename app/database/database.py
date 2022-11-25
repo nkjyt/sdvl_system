@@ -2,7 +2,7 @@ import pyrebase
 import json
 
 class Database():
-
+  
     def __init__(self):
         with open("firebaseConfig.json") as f:
             firebaseConfig = json.loads(f.read())
