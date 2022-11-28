@@ -79,17 +79,27 @@ def memorize():
 
 @app.route("/association", methods=['GET', 'POST'])
 def association():
+    data = {
+        "eng" : "",
+        "jpn" : "",
+        "pos" : "",
+        "hint" : "",
+    }
     if request.method == 'GET':
         w = adb.getUserWords(UID='OTattFQ8vHf1iuPZv94sE3Gj3G22')
         if w == '':
             return redirect(url_for('select'))
-        return render_template("association.html", word = w, path=adb.imgName)
-    else:
-        if adb.eng==request.form['word']:
-            w = adb.jpn
         else:
-            w = adb.eng
-        return render_template("association.html", word = w)
+            data['eng'] = adb.eng
+            data['jpn'] = adb.jpn
+            data['pos'] = adb.pos
+            data['hint'] = adb.eng[0] + "*"*(len(adb.eng)-1)
+
+        return render_template("association.html", word = w, path=adb.imgName, data = data)
+    else:
+        adb.submit(request.form['answer'])
+        
+        return render_template("association.html", word = adb.eng)
 
 if __name__=="__main__":
     app.run(host="0.0.0.0", port=80, debug=True)

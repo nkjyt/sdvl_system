@@ -14,7 +14,7 @@
   <div class="funcBody">
 
     <h1>共通の単語を入力 or 選択してください</h1>
-    <h3>品詞のヒント</h3>
+    <h3>{{data['pos']}}</h3>
 
     <div class="wrap-image">
       <img src="/static/assets/OTattFQ8vHf1iuPZv94sE3Gj3G22/{{word}}/{{path[0]}}.png" alt="img"><br>
@@ -25,20 +25,24 @@
       <h5>{{path[2]}}</h5>
     </div>
 
-    <div class="row g-3 align-items-center m-5">
-      <div class="col-auto">
-        <label for="inputPassword6" class="col-form-label">Input your answer</label>
-      </div>
-      <div class="col-auto">
-        <input type="text" id="text" class="form-control" aria-describedby="passwordHelpInline">
-      </div>
-      <div class="col-auto">
-        <span id="passwordHelpInline" class="form-text">
-          hint
-        </span>
-      </div>
-    </div>
 
+    <form action="/association" method="POST">
+      <div class="row g-3 align-items-center m-5">
+        <div class="col-auto">
+          <label for="inputPassword6" class="col-form-label">Input your answer</label>
+        </div>
+        <div class="col-auto">
+          <input type="text" id="answer" name="answer" class="form-control" aria-describedby="passwordHelpInline">
+        </div>
+        <div class="col-auto">
+          <span id="passwordHelpInline" class="form-text fs-3">
+            {{data['hint']}}
+          </span>
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-secondary btn-lg align-items-center" >Large button</button>
+    </form>
     </div>
 
   </div>

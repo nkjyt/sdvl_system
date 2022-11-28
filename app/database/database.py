@@ -1,6 +1,5 @@
 import pyrebase
-import json
-import random
+import json, random, datetime
 
 class Database():
   
@@ -104,6 +103,7 @@ class associationDB():
         random.shuffle(self.data)
         self.eng = self.data[self.index]['word']
         self.jpn = self.data[self.index]['jpn']
+        self.pos = self.data[self.index]['pos']
 
         return self.eng
 
@@ -117,10 +117,24 @@ class associationDB():
             self.index = 0
             return False
 
-    def remembered(self):
-        self.data[self.index]['remembered'] += 1
+    def submit(self, answer):
+        self.data[self.index]['count'] += 1
+        t_delta = datetime.timedelta(hours=9)
+        JST = datetime.timezone(t_delta, 'JST')
+        now = datetime.datetime.now(JST)
+        d = now.strftime('%Y%m%d%H%M%S')
+        print(d)  # 20211104173728
+        up = {
+            d : {
+                "img" : self.imgName,
+                "answer" : answer
+            }
+        }
+        print(up)
+
+        """ self.data[self.index]['remembered'] += 1
         self.data[self.index]['show'] = False
-        self.db.child("association").child(self.UID).child(self.data[self.index]['word']).update(self.data[self.index])
+        self.db.child("association").child(self.UID).child(self.data[self.index]['word']).update(self.data[self.index]) """
     
     def notRemembered(self):
         self.data[self.index]['not_remembered'] += 1
