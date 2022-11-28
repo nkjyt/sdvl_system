@@ -49,3 +49,14 @@
     width: 300;
     height: auto;
 }
+
+.wrap-image h5{
+    text-align: center;
+}
+
+.wrap-image span{
+    display: inline-block;
+	border: solid 1px #454545;
+    text-decoration: underline;
+    margin-right: 5px;
+}

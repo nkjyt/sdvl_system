@@ -84,6 +84,7 @@ def association():
         "jpn" : "",
         "pos" : "",
         "hint" : "",
+        "keywords" : [],
     }
     if request.method == 'GET':
         w = adb.getUserWords(UID='OTattFQ8vHf1iuPZv94sE3Gj3G22')
@@ -94,7 +95,7 @@ def association():
             data['jpn'] = adb.jpn
             data['pos'] = adb.pos
             data['hint'] = adb.eng[0] + "*"*(len(adb.eng)-1)
-
+            data["keywords"] = [word.replace(adb.eng+"_", "") for word in adb.imgName]
         return render_template("association.html", word = w, path=adb.imgName, data = data)
     else:
         adb.submit(request.form['answer'])
