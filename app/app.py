@@ -13,6 +13,7 @@ app.config['SECRET_KEY'] = os.urandom(24)
 
 mdb = database.memorizeDB()
 adb = database.associationDB()
+jdb = database.japaneseDB()
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -101,6 +102,36 @@ def association():
         adb.submit(request.form['answer'])
         
         return render_template("association.html", word = adb.eng)
+
+@app.route("/japanese", methods=['GET', 'POST'])
+def japanese():
+    if request.method == 'GET':
+        w = jdb.getUserWords(UID='OTattFQ8vHf1iuPZv94sE3Gj3G22')
+        if w == '':
+                return redirect(url_for('select'))
+        
+        return render_template("japanese.html", word=w)
+    else:
+        print(request.form['mode'].split(','))
+        act, query = request.form['mode'].split(',')
+        if act == "translate":
+            if jdb.eng==query:
+                w = jdb.jpn
+            else:
+                w = jdb.eng
+        #rememberボタンを押したとき
+        elif act == "next":
+            if query == "remembered":
+                jdb.remembered()
+            else:
+                jdb.notRemembered()
+            if jdb.nextWord():
+                w = jdb.eng
+            else:
+                return render_template("select.html")
+
+        # path = f'static/assets/{jdb.UID}/{jdb.eng}'
+        return render_template("japanese.html", word = w)
 
 if __name__=="__main__":
     app.run(host="0.0.0.0", port=80, debug=True)
