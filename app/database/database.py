@@ -52,8 +52,8 @@ class memorizeDB():
         return self.eng
 
     def nextWord(self):
-        if self.index < len(self.data) -1:
-            self.index += 1
+        self.index += 1
+        if self.index < len(self.data):
             self.eng = self.data[self.index]['word']
             self.jpn = self.data[self.index]['jpn']
             return True
@@ -92,7 +92,6 @@ class associationDB():
             print("データベースから初期化します")
             for words in self.db.child("association").child(self.UID).get().each():
                 self.data.append(words.val())
-        print(self.data)
         if self.data == []:
             return ''
 
@@ -181,8 +180,8 @@ class japaneseDB():
         return self.eng
 
     def nextWord(self):
-        if self.index < len(self.data) -1:
-            self.index += 1
+        self.index += 1
+        if self.index < len(self.data):
             self.eng = self.data[self.index]['word']
             self.jpn = self.data[self.index]['jpn']
             return True
@@ -191,6 +190,10 @@ class japaneseDB():
             return False
 
     def remembered(self):
-        self.data[self.index]['count'] += 1
+        self.data[self.index]['remembered'] += 1
         self.data[self.index]['show'] = False
+        self.db.child("japanese").child(self.UID).child(self.data[self.index]['word']).update(self.data[self.index])
+
+    def notRemembered(self):
+        self.data[self.index]['not_remembered'] += 1
         self.db.child("japanese").child(self.UID).child(self.data[self.index]['word']).update(self.data[self.index])
