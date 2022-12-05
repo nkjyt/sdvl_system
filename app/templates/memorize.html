@@ -14,11 +14,13 @@
   <div class="funcBody">
 
     <div class="image">
-      <img src="/static/assets/ferocious1.png" alt="img">
+      <img src="{{path}}_0.png" class="m-3" alt="img"><br>
+      <img src="{{path}}_1.png" class="m-3" alt="img"><br>
+      <img src="{{path}}_2.png" class="m-3" alt="img"><br>
     </div>
 
     <form action="/memorize">
-      <button class="flashcard" type="submit" name="word" value={{word}} formmethod="POST">
+      <button class="flashcard" type="submit" name="mode" value="translate,{{word}}" formmethod="POST">
         <h1 class="card-title">{{word}}</h1>
         <h6 class="card-subtitle text-muted">タップしてめくる</h6>
       </button>
@@ -26,8 +28,8 @@
 
     <div class="button_area">
       <form action="/memorize">
-        <button type="submit" name="mode" value="next" formmethod="POST" class="btn btn-danger m-4">not remember</button>
-        <button type="submit" name="mode" value="next" formmethod="POST" class="btn btn-success m-4">remembered</button>
+        <button type="submit" name="mode" value="next,not" formmethod="POST" class="btn btn-danger m-4">not remember</button>
+        <button type="submit" name="mode" value="next,remembered" formmethod="POST" class="btn btn-success m-4">remembered</button>
       </form>
      
     </div>
