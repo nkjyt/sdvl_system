@@ -89,6 +89,7 @@ def association():
     }
     if request.method == 'GET':
         w = adb.getUserWords(UID='OTattFQ8vHf1iuPZv94sE3Gj3G22')
+        print(adb.eng)
         if w == '':
             return redirect(url_for('select'))
         else:
@@ -100,8 +101,15 @@ def association():
         return render_template("association.html", word = w, path=adb.imgName, data = data)
     else:
         adb.submit(request.form['answer'])
-        
-        return render_template("association.html", word = adb.eng)
+        if adb.nextWord():
+            data['eng'] = adb.eng
+            data['jpn'] = adb.jpn
+            data['pos'] = adb.pos
+            data['hint'] = adb.eng[0] + "*"*(len(adb.eng)-1)
+            data["keywords"] = [word.replace(adb.eng+"_", "") for word in adb.imgName]
+            return render_template("association.html", word = adb.eng, path=adb.imgName, data = data)
+        else:
+            return redirect(url_for('select'))
 
 @app.route("/japanese", methods=['GET', 'POST'])
 def japanese():

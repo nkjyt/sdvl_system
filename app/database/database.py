@@ -96,11 +96,12 @@ class associationDB():
         if self.data == []:
             return ''
 
-        print(self.data[self.index]['img'])
-        for img in self.data[self.index]['img'].keys():
-            self.imgName.append(img)
-
         random.shuffle(self.data)
+        print(len(self.data))
+        print(self.data[self.index]['img'])
+        # for img in self.data[self.index]['img'].keys():
+        #     self.imgName.append(img)
+        self.imgName = random.sample(self.data[self.index]['img'].keys(),3)
         self.eng = self.data[self.index]['word']
         self.jpn = self.data[self.index]['jpn']
         self.pos = self.data[self.index]['pos']
@@ -108,10 +109,16 @@ class associationDB():
         return self.eng
 
     def nextWord(self):
-        if self.index < len(self.data) -1:
-            self.index += 1
+        print(f"{self.index} : {self.eng}")
+        self.index += 1
+        if self.index < len(self.data):
             self.eng = self.data[self.index]['word']
             self.jpn = self.data[self.index]['jpn']
+            self.pos = self.data[self.index]['pos']
+            self.imgName = []
+            # for img in self.data[self.index]['img'].keys():
+            #     self.imgName.append(img)
+            self.imgName = random.sample(self.data[self.index]['img'].keys(), 3)
             return True
         else:
             self.index = 0
@@ -130,14 +137,11 @@ class associationDB():
                 "answer" : answer
             }
         }
-        print(up)
-
-        """ self.data[self.index]['remembered'] += 1
-        self.data[self.index]['show'] = False
-        self.db.child("association").child(self.UID).child(self.data[self.index]['word']).update(self.data[self.index]) """
-    
-    def notRemembered(self):
-        self.data[self.index]['not_remembered'] += 1
+        try:
+            self.data[self.index]['log'].update(up)
+        except:
+            self.data[self.index]['log'] = up
+        
         self.db.child("association").child(self.UID).child(self.data[self.index]['word']).update(self.data[self.index])
 
 
@@ -187,10 +191,6 @@ class japaneseDB():
             return False
 
     def remembered(self):
-        self.data[self.index]['remembered'] += 1
+        self.data[self.index]['count'] += 1
         self.data[self.index]['show'] = False
-        self.db.child("japanese").child(self.UID).child(self.data[self.index]['word']).update(self.data[self.index])
-    
-    def notRemembered(self):
-        self.data[self.index]['not_remembered'] += 1
         self.db.child("japanese").child(self.UID).child(self.data[self.index]['word']).update(self.data[self.index])
