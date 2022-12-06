@@ -8,8 +8,9 @@ from firebase_admin import storage
 class Initialize():
 
     def __init__(self):
-        cred = credentials.Certificate("/app/config/imp-sdvl-firebase-adminsdk-isaas-021c35f642.json")
-        firebase_admin.initialize_app(cred)
+        if not firebase_admin._apps:
+            cred = credentials.Certificate("/app/config/imp-sdvl-firebase-adminsdk-isaas-021c35f642.json")
+            firebase_admin.initialize_app(cred)
 
 class japaneseDB():
 
@@ -88,21 +89,24 @@ class Database():
 class memorizeDB():
 
     def __init__(self):
-        with open("firebaseConfig.json") as f:
-            firebaseConfig = json.loads(f.read())
-        firebase = pyrebase.initialize_app(firebaseConfig)
-        self.db = firebase.database()
         self.data = []
         self.index = 0
+        self.imgurl = []
+        Initialize()
+        self.db = firestore.client()
     
     def getUserWords(self, UID):
         self.UID = UID
         self.index = 0
         if self.data == []:
             print("データベースから初期化します")
-            for words in self.db.child("memorize").child(self.UID).get().each():
-                if words.val()['show']:
-                    self.data.append(words.val())
+            doc_ref = self.db.collection("memorize").document(UID)
+            doc = doc_ref.get().to_dict()
+
+            for word in doc.keys():
+                if doc[word]['show']:
+                    self.data.append(doc[word])
+
         else:
             print("ローカルから読みこみます")
             tmp = []
@@ -110,10 +114,12 @@ class memorizeDB():
                 if self.data[i]['show']:
                     tmp.append(v)
             self.data = tmp
+
         print(self.data)
         if self.data == []:
             return ''
         random.shuffle(self.data)
+        self.imgurl = self.data[self.index]['img']
         self.eng = self.data[self.index]['word']
         self.jpn = self.data[self.index]['jpn']
         print(self.data)
@@ -125,6 +131,7 @@ class memorizeDB():
         if self.index < len(self.data):
             self.eng = self.data[self.index]['word']
             self.jpn = self.data[self.index]['jpn']
+            self.imgurl = self.data[self.index]['img']
             return True
         else:
             self.index = 0
@@ -133,11 +140,13 @@ class memorizeDB():
     def remembered(self):
         self.data[self.index]['remembered'] += 1
         self.data[self.index]['show'] = False
-        self.db.child("memorize").child(self.UID).child(self.data[self.index]['word']).update(self.data[self.index])
+        self.db.collection("memorize").document(self.UID).update({self.data[self.index]['word'] : self.data[self.index]})
+        # self.db.child("memorize").child(self.UID).child(self.data[self.index]['word']).update(self.data[self.index])
     
     def notRemembered(self):
         self.data[self.index]['not_remembered'] += 1
-        self.db.child("memorize").child(self.UID).child(self.data[self.index]['word']).update(self.data[self.index])
+        self.db.collection("memorize").document(self.UID).update({self.data[self.index]['word'] : self.data[self.index]})
+        # self.db.child("memorize").child(self.UID).child(self.data[self.index]['word']).update(self.data[self.index])
 
 class associationDB():
     def __init__(self):

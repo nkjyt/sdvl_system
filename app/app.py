@@ -52,10 +52,9 @@ def select():
 def memorize():
     if request.method == 'GET':
         w = mdb.getUserWords(UID='OTattFQ8vHf1iuPZv94sE3Gj3G22')
-        path = f'static/assets/{mdb.UID}/{mdb.eng}/{mdb.eng}'
         if w == '':
             return redirect(url_for('select'))
-        return render_template("memorize.html", word = w, path=path)
+        return render_template("memorize.html", word = w, path=mdb.imgurl)
     else:
         print(request.form['mode'].split(','))
         act, query = request.form['mode'].split(',')
@@ -76,7 +75,7 @@ def memorize():
                 return render_template("select.html")
 
         path = f'static/assets/{mdb.UID}/{mdb.eng}/{mdb.eng}'
-        return render_template("memorize.html", word = w, path=path)
+        return render_template("memorize.html", word = w, path=mdb.imgurl)
 
 @app.route("/association", methods=['GET', 'POST'])
 def association():
