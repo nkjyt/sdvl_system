@@ -1,5 +1,74 @@
 import pyrebase
 import json, random, datetime
+import firebase_admin
+from firebase_admin import firestore
+from firebase_admin import credentials
+from firebase_admin import storage
+
+class Initialize():
+
+    def __init__(self):
+        cred = credentials.Certificate("/app/config/imp-sdvl-firebase-adminsdk-isaas-021c35f642.json")
+        firebase_admin.initialize_app(cred)
+
+class japaneseDB():
+
+    def __init__(self):
+        self.index = 0
+        self.eng = ""
+        self.jpn = ""
+        self.data = []
+        Initialize()
+        self.db = firestore.client()
+    
+    def getUserWords(self, UID):
+        self.UID = UID
+        self.index = 0
+        if self.data == []:
+            print("データベースから初期化します")
+            doc_ref = self.db.collection("japanese").document(UID)
+            doc = doc_ref.get().to_dict()
+            
+            for word in doc.keys():
+                if doc[word]['show']:
+                    self.data.append(doc[word])
+        else:
+            print("ローカルから読みこみます")
+            tmp = []
+            for i, v in enumerate(self.data):
+                if self.data[i]['show']:
+                    tmp.append(v)
+            self.data = tmp
+        
+        print(self.data)
+        if self.data == []:
+            return ''
+        random.shuffle(self.data)
+        self.eng = self.data[self.index]['word']
+        self.jpn = self.data[self.index]['jpn']
+        print(self.data)
+
+        return self.eng
+    
+    def nextWord(self):
+        self.index += 1
+        if self.index < len(self.data):
+            self.eng = self.data[self.index]['word']
+            self.jpn = self.data[self.index]['jpn']
+            return True
+        else:
+            self.index = 0
+            return False
+
+    def remembered(self):
+        self.data[self.index]['remembered'] += 1
+        self.data[self.index]['show'] = False
+        self.db.collection("japanese").document(self.UID).update({self.data[self.index]['word'] : self.data[self.index]})
+
+    def notRemembered(self):
+        self.data[self.index]['not_remembered'] += 1
+        self.db.collection("japanese").document(self.UID).update({self.data[self.index]['word'] : self.data[self.index]})
+
 
 class Database():
   
@@ -69,8 +138,6 @@ class memorizeDB():
     def notRemembered(self):
         self.data[self.index]['not_remembered'] += 1
         self.db.child("memorize").child(self.UID).child(self.data[self.index]['word']).update(self.data[self.index])
-
-
 
 class associationDB():
     def __init__(self):
@@ -143,57 +210,56 @@ class associationDB():
         
         self.db.child("association").child(self.UID).child(self.data[self.index]['word']).update(self.data[self.index])
 
+# class japaneseDB():
 
-class japaneseDB():
-
-    def __init__(self):
-        with open("firebaseConfig.json") as f:
-            firebaseConfig = json.loads(f.read())
-        firebase = pyrebase.initialize_app(firebaseConfig)
-        self.db = firebase.database()
-        self.data = []
-        self.index = 0
+#     def __init__(self):
+#         with open("firebaseConfig.json") as f:
+#             firebaseConfig = json.loads(f.read())
+#         firebase = pyrebase.initialize_app(firebaseConfig)
+#         self.db = firebase.database()
+#         self.data = []
+#         self.index = 0
     
-    def getUserWords(self, UID):
-        self.UID = UID
-        self.index = 0
-        if self.data == []:
-            print("データベースから初期化します")
-            for words in self.db.child("japanese").child(self.UID).get().each():
-                if words.val()['show']:
-                    self.data.append(words.val())
-        else:
-            print("ローカルから読みこみます")
-            tmp = []
-            for i, v in enumerate(self.data):
-                if self.data[i]['show']:
-                    tmp.append(v)
-            self.data = tmp
-        print(self.data)
-        if self.data == []:
-            return ''
-        random.shuffle(self.data)
-        self.eng = self.data[self.index]['word']
-        self.jpn = self.data[self.index]['jpn']
-        print(self.data)
+#     def getUserWords(self, UID):
+#         self.UID = UID
+#         self.index = 0
+#         if self.data == []:
+#             print("データベースから初期化します")
+#             for words in self.db.child("japanese").child(self.UID).get().each():
+#                 if words.val()['show']:
+#                     self.data.append(words.val())
+#         else:
+#             print("ローカルから読みこみます")
+#             tmp = []
+#             for i, v in enumerate(self.data):
+#                 if self.data[i]['show']:
+#                     tmp.append(v)
+#             self.data = tmp
+#         print(self.data)
+#         if self.data == []:
+#             return ''
+#         random.shuffle(self.data)
+#         self.eng = self.data[self.index]['word']
+#         self.jpn = self.data[self.index]['jpn']
+#         print(self.data)
 
-        return self.eng
+#         return self.eng
 
-    def nextWord(self):
-        self.index += 1
-        if self.index < len(self.data):
-            self.eng = self.data[self.index]['word']
-            self.jpn = self.data[self.index]['jpn']
-            return True
-        else:
-            self.index = 0
-            return False
+#     def nextWord(self):
+#         self.index += 1
+#         if self.index < len(self.data):
+#             self.eng = self.data[self.index]['word']
+#             self.jpn = self.data[self.index]['jpn']
+#             return True
+#         else:
+#             self.index = 0
+#             return False
 
-    def remembered(self):
-        self.data[self.index]['remembered'] += 1
-        self.data[self.index]['show'] = False
-        self.db.child("japanese").child(self.UID).child(self.data[self.index]['word']).update(self.data[self.index])
+#     def remembered(self):
+#         self.data[self.index]['remembered'] += 1
+#         self.data[self.index]['show'] = False
+#         self.db.child("japanese").child(self.UID).child(self.data[self.index]['word']).update(self.data[self.index])
 
-    def notRemembered(self):
-        self.data[self.index]['not_remembered'] += 1
-        self.db.child("japanese").child(self.UID).child(self.data[self.index]['word']).update(self.data[self.index])
+#     def notRemembered(self):
+#         self.data[self.index]['not_remembered'] += 1
+#         self.db.child("japanese").child(self.UID).child(self.data[self.index]['word']).update(self.data[self.index])
