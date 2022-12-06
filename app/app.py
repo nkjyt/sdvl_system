@@ -74,7 +74,6 @@ def memorize():
             else:
                 return render_template("select.html")
 
-        path = f'static/assets/{mdb.UID}/{mdb.eng}/{mdb.eng}'
         return render_template("memorize.html", word = w, path=mdb.imgurl)
 
 @app.route("/association", methods=['GET', 'POST'])
@@ -96,7 +95,7 @@ def association():
             data['pos'] = adb.pos
             data['hint'] = adb.eng[0] + "*"*(len(adb.eng)-1)
             data["keywords"] = [word.replace(adb.eng+"_", "") for word in adb.imgName]
-        return render_template("association.html", word = w, path=adb.imgName, data = data)
+        return render_template("association.html", word = w, path=adb.imgurl, data = data)
     else:
         adb.submit(request.form['answer'])
         if adb.nextWord():
@@ -105,7 +104,7 @@ def association():
             data['pos'] = adb.pos
             data['hint'] = adb.eng[0] + "*"*(len(adb.eng)-1)
             data["keywords"] = [word.replace(adb.eng+"_", "") for word in adb.imgName]
-            return render_template("association.html", word = adb.eng, path=adb.imgName, data = data)
+            return render_template("association.html", word = adb.eng, path=adb.imgurl, data = data)
         else:
             return redirect(url_for('select'))
 

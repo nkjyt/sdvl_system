@@ -150,12 +150,11 @@ class memorizeDB():
 
 class associationDB():
     def __init__(self):
-        with open("firebaseConfig.json") as f:
-            firebaseConfig = json.loads(f.read())
-        firebase = pyrebase.initialize_app(firebaseConfig)
-        self.db = firebase.database()
+        Initialize()
+        self.db = firestore.client()
         self.data = []
         self.index = 0
+        self.imgurl = []
         self.eng = ''
         self.jpn = ''
         self.pos = ''
@@ -163,20 +162,27 @@ class associationDB():
     def getUserWords(self, UID):
         self.UID = UID
         self.index = 0
-        self.imgName = []
         if self.data == []:
             print("データベースから初期化します")
-            for words in self.db.child("association").child(self.UID).get().each():
-                self.data.append(words.val())
+            doc_ref = self.db.collection("association").document(UID)
+            doc = doc_ref.get().to_dict()
+
+            for word in doc.keys():
+                self.data.append(doc[word])
         if self.data == []:
             return ''
 
         random.shuffle(self.data)
-        print(len(self.data))
-        print(self.data[self.index]['img'])
         # for img in self.data[self.index]['img'].keys():
-        #     self.imgName.append(img)
-        self.imgName = random.sample(self.data[self.index]['img'].keys(),3)
+        #     self.imgurl.append(img)
+
+        self.imgName = []
+        self.imgurl = []
+        for i in random.sample(self.data[self.index]['url'].keys(),3):
+            self.imgName.append(i)
+            self.imgurl.append(self.data[self.index]['url'][i])
+
+        print(self.imgurl)
         self.eng = self.data[self.index]['word']
         self.jpn = self.data[self.index]['jpn']
         self.pos = self.data[self.index]['pos']
@@ -190,10 +196,13 @@ class associationDB():
             self.eng = self.data[self.index]['word']
             self.jpn = self.data[self.index]['jpn']
             self.pos = self.data[self.index]['pos']
-            self.imgName = []
             # for img in self.data[self.index]['img'].keys():
-            #     self.imgName.append(img)
-            self.imgName = random.sample(self.data[self.index]['img'].keys(), 3)
+            #     self.imgurl.append(img)
+            self.imgName = []
+            self.imgurl = []
+            for i in random.sample(self.data[self.index]['url'].keys(),3):
+                self.imgName.append(i)
+                self.imgurl.append(self.data[self.index]['url'][i])
             return True
         else:
             self.index = 0
@@ -217,7 +226,8 @@ class associationDB():
         except:
             self.data[self.index]['log'] = up
         
-        self.db.child("association").child(self.UID).child(self.data[self.index]['word']).update(self.data[self.index])
+        self.db.collection("association").document(self.UID).update({self.data[self.index]['word'] : self.data[self.index]})
+        # self.db.child("association").child(self.UID).child(self.data[self.index]['word']).update(self.data[self.index])
 
 # class japaneseDB():
 
