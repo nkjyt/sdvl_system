@@ -9,6 +9,7 @@ RUN apt-get update -y -qq
 RUN apt-get install python3 -y -qq
 RUN apt-get install python3-pip -y -qq
 RUN apt-get install vim -y -qq
+RUN apt-get install wget -y -qq
 
 
 COPY ./requirements.txt /app
