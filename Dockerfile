@@ -12,7 +12,7 @@ RUN apt-get install vim -y -qq
 RUN apt-get install wget -y -qq
 
 
-COPY ./requirements.txt /app
+COPY ./app/requirements.txt /app
 
 RUN pip3 install -r requirements.txt
 
