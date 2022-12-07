@@ -1,4 +1,3 @@
-import pyrebase
 import json, random, datetime
 import firebase_admin
 from firebase_admin import firestore
@@ -9,8 +8,11 @@ class Initialize():
 
     def __init__(self):
         if not firebase_admin._apps:
-            cred = credentials.Certificate("/app/config/imp-sdvl-firebase-adminsdk-isaas-021c35f642.json")
+            cred = credentials.Certificate("/app/static/config/imp-sdvl-firebase-adminsdk-isaas-021c35f642.json")
             firebase_admin.initialize_app(cred)
+    
+    def login(self, uid):
+        self.uid = uid
 
 class japaneseDB():
 
@@ -23,7 +25,8 @@ class japaneseDB():
         self.db = firestore.client()
     
     def getUserWords(self, UID):
-        self.UID = UID
+        if UID != "":
+            self.UID = UID
         self.index = 0
         if self.data == []:
             print("データベースから初期化します")
@@ -70,21 +73,6 @@ class japaneseDB():
         self.data[self.index]['not_remembered'] += 1
         self.db.collection("japanese").document(self.UID).update({self.data[self.index]['word'] : self.data[self.index]})
 
-
-class Database():
-  
-    def __init__(self):
-        with open("firebaseConfig.json") as f:
-            firebaseConfig = json.loads(f.read())
-        firebase = pyrebase.initialize_app(firebaseConfig)
-        self.db = firebase.database()
-        self.memorize = None
-        self.UID = ''
-    
-    def read(self, UID):
-        if self.memorize == None:
-            self.memorize = self.db.child("memorize").child(UID)
-        return self.memorize.get().val()
 
 class memorizeDB():
 

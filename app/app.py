@@ -1,12 +1,13 @@
 from flask import Flask, request, jsonify, render_template, redirect, url_for, session
-import pyrebase
+import firebase_admin
+from firebase_admin import auth
 import json, os
 import database.database as database
 
-with open("firebaseConfig.json") as f:
-    firebaseConfig = json.loads(f.read())
-firebase = pyrebase.initialize_app(firebaseConfig)
-auth = firebase.auth()
+# with open("firebaseConfig.json") as f:
+#     firebaseConfig = json.loads(f.read())
+# firebase = pyrebase.initialize_app(firebaseConfig)
+# auth = firebase.auth()
 
 app = Flask(__name__, static_folder='./static')
 app.config['SECRET_KEY'] = os.urandom(24)
@@ -14,6 +15,7 @@ app.config['SECRET_KEY'] = os.urandom(24)
 mdb = database.memorizeDB()
 adb = database.associationDB()
 jdb = database.japaneseDB()
+ini = database.Initialize()
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -22,12 +24,11 @@ def login():
         return render_template("login.html",msg="")
 
     email = request.form['email']
-    password = request.form['password']
+
     try:
-        user = auth.sign_in_with_email_and_password(email, password)
-        session['usr'] = email
-        session['uid'] = auth.get_account_info(user['idToken'])['users'][0]['localId']
-        return redirect(url_for('index'))
+        user = firebase_admin.auth.get_user_by_email(email)
+        ini.login(user.uid)
+        return redirect(url_for('select'))
     except:
         return render_template("login.html", msg="メールアドレスまたはパスワードが間違っています。")
 
@@ -51,7 +52,7 @@ def select():
 @app.route("/memorize", methods=['GET', 'POST'])
 def memorize():
     if request.method == 'GET':
-        w = mdb.getUserWords(UID='OTattFQ8vHf1iuPZv94sE3Gj3G22')
+        w = mdb.getUserWords(ini.uid)
         if w == '':
             return redirect(url_for('select'))
         return render_template("memorize.html", word = w, path=mdb.imgurl)
@@ -86,7 +87,7 @@ def association():
         "keywords" : [],
     }
     if request.method == 'GET':
-        w = adb.getUserWords(UID='OTattFQ8vHf1iuPZv94sE3Gj3G22')
+        w = adb.getUserWords(ini.uid)
         if w == '':
             return redirect(url_for('select'))
         else:
@@ -111,7 +112,7 @@ def association():
 @app.route("/japanese", methods=['GET', 'POST'])
 def japanese():
     if request.method == 'GET':
-        w = jdb.getUserWords(UID='OTattFQ8vHf1iuPZv94sE3Gj3G22')
+        w = jdb.getUserWords(ini.uid)
         if w == '':
                 return redirect(url_for('select'))
         
