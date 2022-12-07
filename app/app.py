@@ -1,12 +1,13 @@
 from flask import Flask, request, jsonify, render_template, redirect, url_for, session
 import firebase_admin
+import pyrebase
 import json, os
 import database.database as database
 
-# with open("firebaseConfig.json") as f:
-#     firebaseConfig = json.loads(f.read())
-# firebase = pyrebase.initialize_app(firebaseConfig)
-# auth = firebase.auth()
+with open("firebaseConfig.json") as f:
+    firebaseConfig = json.loads(f.read())
+firebase = pyrebase.initialize_app(firebaseConfig)
+auth = firebase.auth()
 
 app = Flask(__name__, static_folder='./static')
 app.config['SECRET_KEY'] = os.urandom(24)
@@ -23,14 +24,15 @@ def login():
         return render_template("login.html",msg="")
 
     email = request.form['email']
-
+    password = request.form['password']
     try:
-        user = firebase_admin.auth.get_user_by_email(email)
-        ini.login(user.uid)
+        # user = firebase_admin.auth.get_user_by_email(email)
+        # ini.login(user.uid)
+        user = auth.sign_in_with_email_and_password(email, password)
+        ini.login(auth.get_account_info(user['idToken'])['users'][0]['localId'])
         return redirect(url_for('select'))
     except:
         return render_template("login.html", msg="メールアドレスまたはパスワードが間違っています。")
-
 @app.route("/", methods=['GET'])
 def index():
     usr = session.get('usr')
@@ -139,4 +141,4 @@ def japanese():
         return render_template("japanese.html", word = w)
 
 if __name__=="__main__":
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=80,debug=True)
