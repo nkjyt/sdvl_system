@@ -1,5 +1,4 @@
 from flask import Flask, request, jsonify, render_template, redirect, url_for, session
-import firebase_admin
 import pyrebase
 import json, os
 import database.database as database
