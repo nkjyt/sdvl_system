@@ -109,7 +109,7 @@ def association():
             data["keywords"] = [word.replace(adb.eng+"_", "") for word in adb.imgName]
         return render_template("association.html", word = w, path=adb.imgurl, data = data)
     else:
-        adb.submit(request.form['answer'])
+        # adb.submit(request.form['answer'])
         if adb.nextWord():
             data['eng'] = adb.eng
             data['jpn'] = adb.jpn
@@ -119,6 +119,21 @@ def association():
             return render_template("association.html", word = adb.eng, path=adb.imgurl, data = data)
         else:
             return redirect(url_for('select'))
+
+@app.route("/association/answer", methods=['POST'])
+def post_answer():
+    data = {}
+    answer = request.form['answer']
+    adb.submit(answer)
+    if answer == adb.eng:
+        msg = "正解！"
+    else:
+        msg = "不正解"
+    data['eng'] = adb.eng
+    data['jpn'] = adb.jpn
+    data['answer'] = request.form['answer']
+    data["keywords"] = [word.replace(adb.eng+"_", "") for word in adb.imgName]
+    return render_template("association_answer.html",path=adb.imgurl, data = data, msg = msg)
 
 @app.route("/japanese", methods=['GET', 'POST'])
 def japanese():
