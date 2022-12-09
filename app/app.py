@@ -37,7 +37,7 @@ def index():
     usr = session.get('usr')
     if usr == None:
         return redirect(url_for('login'))
-    return render_template("index.html", usr=usr)
+    return render_template("login.html", usr=usr)
 
 @app.route('/logout')
 def logout():
@@ -76,6 +76,17 @@ def memorize():
                 return render_template("select.html")
 
         return render_template("memorize.html", word = w, path=mdb.imgurl)
+
+#フラッシュカードを裏返した時の処理
+@app.route("/memorize#card", methods=['POST'])
+def memorize_card():
+    act, query = request.form['mode'].split(',')
+    if act == "translate":
+            if mdb.eng==query:
+                w = mdb.jpn
+            else:
+                w = mdb.eng
+    return render_template("memorize.html", word= w, path=mdb.imgurl)
 
 @app.route("/association", methods=['GET', 'POST'])
 def association():
