@@ -58,7 +58,6 @@ def select():
         uid = ini.uid
         print(uid)
         t = timer.get_time()
-        print(t)
         return render_template("select.html", usr=uid, time_log=t)
     except:
         return redirect(url_for('login'))
@@ -89,7 +88,7 @@ def memorize():
             if mdb.nextWord():
                 w = mdb.eng
             else:
-                return render_template("select.html")
+                return redirect(url_for("select"))
 
         return render_template("memorize.html", word = w, path=mdb.imgurl)
 
@@ -180,7 +179,7 @@ def japanese():
             if jdb.nextWord():
                 w = jdb.eng
             else:
-                return render_template("select.html")
+                return redirect(url_for("select"))
 
         # path = f'static/assets/{jdb.UID}/{jdb.eng}'
         return render_template("japanese.html", word = w)
