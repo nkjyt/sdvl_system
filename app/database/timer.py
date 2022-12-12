@@ -30,4 +30,16 @@ class Timer():
         except:
             return "0h:00m:00s"
     
-    
+    def record_time(self):
+        if self.start_d == datetime.date.today():
+            t = time.time() - self.start_t
+            if t > 60:
+                t = 60
+            dt = self.start_d.strftime('%Y-%m-%d')
+            t_sum = self.doc.get().to_dict()[dt] + t
+            self.doc.update({dt: t_sum})
+        else:
+            str_date = datetime.date.today().strftime('%Y-%m-%d')
+            self.doc.update({str_date : 60.0})
+            
+        self.start_timer()

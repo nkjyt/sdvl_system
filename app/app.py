@@ -67,6 +67,7 @@ def select():
 def memorize():
     if request.method == 'GET':
         w = mdb.getUserWords(ini.uid)
+        timer.start_timer()
         if w == '':
             return redirect(url_for('select'))
         return render_template("memorize.html", word = w, path=mdb.imgurl)
@@ -80,6 +81,7 @@ def memorize():
                 w = mdb.eng
         #rememberボタンを押したとき
         elif act == "next":
+            timer.record_time()
             if query == "remembered":
                 mdb.remembered()
             else:
@@ -113,6 +115,7 @@ def association():
     }
     if request.method == 'GET':
         w = adb.getUserWords(ini.uid)
+        timer.start_timer()
         if w == '':
             return redirect(url_for('select'))
         else:
@@ -124,6 +127,7 @@ def association():
         return render_template("association.html", word = w, path=adb.imgurl, data = data)
     else:
         # adb.submit(request.form['answer'])
+        timer.record_time()
         if adb.nextWord():
             data['eng'] = adb.eng
             data['jpn'] = adb.jpn
@@ -153,6 +157,7 @@ def post_answer():
 def japanese():
     if request.method == 'GET':
         w = jdb.getUserWords(ini.uid)
+        timer.start_timer()
         if w == '':
                 return redirect(url_for('select'))
         
@@ -167,6 +172,7 @@ def japanese():
                 w = jdb.eng
         #rememberボタンを押したとき
         elif act == "next":
+            timer.record_time()
             if query == "remembered":
                 jdb.remembered()
             else:
