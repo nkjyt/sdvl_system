@@ -64,6 +64,11 @@ def select():
 
 @app.route("/memorize", methods=['GET', 'POST'])
 def memorize():
+    try:
+        uid = ini.uid
+    except:
+        return redirect(url_for('login'))
+    
     if request.method == 'GET':
         w = mdb.getUserWords(ini.uid)
         timer.start_timer()
@@ -105,6 +110,11 @@ def memorize_card():
 
 @app.route("/association", methods=['GET', 'POST'])
 def association():
+    try:
+        uid = ini.uid
+    except:
+        return redirect(url_for('login'))
+
     data = {
         "eng" : "",
         "jpn" : "",
@@ -154,6 +164,10 @@ def post_answer():
 
 @app.route("/japanese", methods=['GET', 'POST'])
 def japanese():
+    try:
+        uid = ini.uid
+    except:
+        return redirect(url_for('login'))
     if request.method == 'GET':
         w = jdb.getUserWords(ini.uid)
         timer.start_timer()
