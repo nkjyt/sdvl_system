@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify, render_template, redirect, url_for, s
 import pyrebase
 import json, os
 import database.database as database
+import database.timer as f_timer
 
 with open("firebaseConfig.json") as f:
     firebaseConfig = json.loads(f.read())
@@ -15,7 +16,7 @@ mdb = database.memorizeDB()
 adb = database.associationDB()
 jdb = database.japaneseDB()
 ini = database.Initialize()
-
+timer = f_timer.Timer()
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -28,16 +29,23 @@ def login():
         # user = firebase_admin.auth.get_user_by_email(email)
         # ini.login(user.uid)
         user = auth.sign_in_with_email_and_password(email, password)
-        ini.login(auth.get_account_info(user['idToken'])['users'][0]['localId'])
+        uid = auth.get_account_info(user['idToken'])['users'][0]['localId']
+        ini.login(uid)
+        timer.get_doc(uid)
         return redirect(url_for('select'))
     except:
         return render_template("login.html", msg="メールアドレスまたはパスワードが間違っています。")
+
 @app.route("/", methods=['GET'])
 def index():
-    usr = session.get('usr')
-    if usr == None:
+    try:
+        uid = ini.uid
+        if uid == "":
+            return redirect(url_for('login'))
+        return render_template("login.html", usr=uid)
+    except:
         return redirect(url_for('login'))
-    return render_template("login.html", usr=usr)
+    
 
 @app.route('/logout')
 def logout():
@@ -46,8 +54,14 @@ def logout():
 
 @app.route("/select", methods=['GET'])
 def select():
-    usr = session.get('usr')
-    return render_template("select.html", usr=usr)
+    try:
+        uid = ini.uid
+        print(uid)
+        t = timer.get_time()
+        print(t)
+        return render_template("select.html", usr=uid, time_log=t)
+    except:
+        return redirect(url_for('login'))
 
 @app.route("/memorize", methods=['GET', 'POST'])
 def memorize():

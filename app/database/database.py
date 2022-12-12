@@ -9,7 +9,7 @@ class Initialize():
         if not firebase_admin._apps:
             cred = credentials.Certificate("static/config/imp-sdvl-firebase-adminsdk-isaas-021c35f642.json")
             firebase_admin.initialize_app(cred)
-    
+
     def login(self, uid):
         self.uid = uid
 
