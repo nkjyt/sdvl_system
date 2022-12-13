@@ -21,9 +21,6 @@ class Timer():
 
     def get_time(self):
         dt = datetime.date.today().strftime('%Y-%m-%d')
-        t = self.doc.get().to_dict()[dt]
-        print(t)
-        print(self.hms(t))
         try:
             t = self.doc.get().to_dict()[dt]
             return self.hms(t)
@@ -41,5 +38,5 @@ class Timer():
         else:
             str_date = datetime.date.today().strftime('%Y-%m-%d')
             self.doc.update({str_date : 60.0})
-            
+
         self.start_timer()
