@@ -54,8 +54,3 @@ def hms(td):
     return f"{h}h:{m}m:{s}s"
 
 
-start_d, start_t = start_timer()
-time.sleep(1)
-record_time(start_d, start_t)
-
-print(hms(3000))

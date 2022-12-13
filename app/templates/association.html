@@ -19,12 +19,22 @@
       <h3>共通の単語を入力して下さい</h3>
   
       <div class="wrap-image">
-        <img src="{{path[0]}}" alt="img"><br>
+      {% if data['pos']=='形容詞' %}
+      <img src="{{path[0]}}" alt="img"><br>
         <h5 class="fs-2"><span class="border">　?　</span>　{{data['keywords'][0]}}</h5>
         <img src="{{path[1]}}" alt="img"><br>
         <h5 class="fs-2"><span class="border">　?　</span>　{{data['keywords'][1]}}</h5>
         <img src="{{path[2]}}" alt="img"><br>
         <h5 class="fs-2"><span class="border">　?　</span>　{{data['keywords'][2]}}</h5>
+      {% else %}
+      <img src="{{path[0]}}" alt="img"><br>
+        <h5 class="fs-2">{{data['keywords'][0]}}　<span class="border">　?　</span></h5>
+        <img src="{{path[1]}}" alt="img"><br>
+        <h5 class="fs-2">{{data['keywords'][1]}}　<span class="border">　?　</span></h5>
+        <img src="{{path[2]}}" alt="img"><br>
+        <h5 class="fs-2">{{data['keywords'][2]}}　<span class="border">　?　</span></h5>
+      {% endif %}
+        
       </div>
   
       
