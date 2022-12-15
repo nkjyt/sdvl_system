@@ -27,6 +27,7 @@ class japaneseDB():
         if UID != "":
             self.UID = UID
         self.index = 0
+        self.data = []
         if self.data == []:
             print("データベースから初期化します")
             doc_ref = self.db.collection("japanese").document(UID)
@@ -35,13 +36,13 @@ class japaneseDB():
             for word in doc.keys():
                 if doc[word]['show']:
                     self.data.append(doc[word])
-        else:
-            print("ローカルから読みこみます")
-            tmp = []
-            for i, v in enumerate(self.data):
-                if self.data[i]['show']:
-                    tmp.append(v)
-            self.data = tmp
+        # else:
+        #     print("ローカルから読みこみます")
+        #     tmp = []
+        #     for i, v in enumerate(self.data):
+        #         if self.data[i]['show']:
+        #             tmp.append(v)
+        #     self.data = tmp
         
         print(self.data)
         if self.data == []:
@@ -72,6 +73,15 @@ class japaneseDB():
         self.data[self.index]['not_remembered'] += 1
         self.db.collection("japanese").document(self.UID).update({self.data[self.index]['word'] : self.data[self.index]})
 
+    def reset(self):
+        print('reset')
+        doc_ref = self.db.collection("japanese").document(self.UID)
+        doc = doc_ref.get().to_dict()
+            
+        for word in doc.keys():
+
+            doc[word]['show'] = True
+            self.db.collection("japanese").document(self.UID).update({word: doc[word]})
 
 class memorizeDB():
 
@@ -85,6 +95,7 @@ class memorizeDB():
     def getUserWords(self, UID):
         self.UID = UID
         self.index = 0
+        self.data = []
         if self.data == []:
             print("データベースから初期化します")
             doc_ref = self.db.collection("memorize").document(UID)
@@ -94,13 +105,17 @@ class memorizeDB():
                 if doc[word]['show']:
                     self.data.append(doc[word])
 
-        else:
-            print("ローカルから読みこみます")
-            tmp = []
-            for i, v in enumerate(self.data):
-                if self.data[i]['show']:
-                    tmp.append(v)
-            self.data = tmp
+        # else:
+        #     print("ローカルから読みこみます")
+        #     tmp = []
+        #     for i, v in enumerate(self.data):
+        #         if self.data[i]['show']:
+        #             tmp.append(v)
+        #     self.data = tmp
+        
+        self.imgurl = []
+        for i in random.sample(self.data[self.index]['img'],3):
+            self.imgurl.append(i)
 
         print(self.data)
         if self.data == []:
@@ -119,6 +134,10 @@ class memorizeDB():
             self.eng = self.data[self.index]['word']
             self.jpn = self.data[self.index]['jpn']
             self.imgurl = self.data[self.index]['img']
+            self.imgurl = []
+            for i in random.sample(self.data[self.index]['img'],3):
+                self.imgurl.append(i)
+
             return True
         else:
             self.index = 0
@@ -134,6 +153,16 @@ class memorizeDB():
         self.data[self.index]['not_remembered'] += 1
         self.db.collection("memorize").document(self.UID).update({self.data[self.index]['word'] : self.data[self.index]})
         # self.db.child("memorize").child(self.UID).child(self.data[self.index]['word']).update(self.data[self.index])
+
+    def reset(self):
+        print('reset')
+        doc_ref = self.db.collection("memorize").document(self.UID)
+        doc = doc_ref.get().to_dict()
+            
+        for word in doc.keys():
+
+            doc[word]['show'] = True
+            self.db.collection("memorize").document(self.UID).update({word: doc[word]})
 
 class associationDB():
     def __init__(self):
@@ -155,7 +184,8 @@ class associationDB():
             doc = doc_ref.get().to_dict()
 
             for word in doc.keys():
-                self.data.append(doc[word])
+                if doc[word]['show']:
+                    self.data.append(doc[word])
         if self.data == []:
             return ''
 
@@ -215,7 +245,15 @@ class associationDB():
         
         self.db.collection("association").document(self.UID).update({self.data[self.index]['word'] : self.data[self.index]})
         # self.db.child("association").child(self.UID).child(self.data[self.index]['word']).update(self.data[self.index])
+    def reset(self):
+        print('reset')
+        doc_ref = self.db.collection("association").document(self.UID)
+        doc = doc_ref.get().to_dict()
+            
+        for word in doc.keys():
 
+            doc[word]['show'] = True
+            self.db.collection("association").document(self.UID).update({word: doc[word]})
 # class japaneseDB():
 
 #     def __init__(self):

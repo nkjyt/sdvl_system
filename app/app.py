@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify, render_template, redirect, url_for, session
 import pyrebase
-import json, os
+import json, os, re
 import database.database as database
 import database.timer as f_timer
 
@@ -73,6 +73,7 @@ def memorize():
         w = mdb.getUserWords(ini.uid)
         timer.start_timer()
         if w == '':
+            mdb.reset()
             return redirect(url_for('select'))
         return render_template("memorize.html", word = w, path=mdb.imgurl)
     else:
@@ -126,13 +127,14 @@ def association():
         w = adb.getUserWords(ini.uid)
         timer.start_timer()
         if w == '':
+            adb.reset()
             return redirect(url_for('select'))
         else:
             data['eng'] = adb.eng
             data['jpn'] = adb.jpn
             data['pos'] = adb.pos
             data['hint'] = adb.eng[0] + "*"*(len(adb.eng)-1)
-            data["keywords"] = [word.replace(adb.eng+"_", "") for word in adb.imgName]
+            data["keywords"] = [rep(word, adb.eng) for word in adb.imgName]
         return render_template("association.html", word = w, path=adb.imgurl, data = data)
     else:
         # adb.submit(request.form['answer'])
@@ -142,7 +144,7 @@ def association():
             data['jpn'] = adb.jpn
             data['pos'] = adb.pos
             data['hint'] = adb.eng[0] + "*"*(len(adb.eng)-1)
-            data["keywords"] = [word.replace(adb.eng+"_", "") for word in adb.imgName]
+            data["keywords"] = [rep(word, adb.eng) for word in adb.imgName]
             return render_template("association.html", word = adb.eng, path=adb.imgurl, data = data)
         else:
             return redirect(url_for('select'))
@@ -158,9 +160,15 @@ def post_answer():
         msg = "不正解"
     data['eng'] = adb.eng
     data['jpn'] = adb.jpn
+    data['pos'] = adb.pos
     data['answer'] = request.form['answer']
-    data["keywords"] = [word.replace(adb.eng+"_", "") for word in adb.imgName]
+    data["keywords"] = [rep(word, adb.eng) for word in adb.imgName]
     return render_template("association_answer.html",path=adb.imgurl, data = data, msg = msg)
+
+def rep(st, word):
+    st = st.replace("_", "")
+    st = st.replace(word, "")
+    return st
 
 @app.route("/japanese", methods=['GET', 'POST'])
 def japanese():
@@ -172,7 +180,8 @@ def japanese():
         w = jdb.getUserWords(ini.uid)
         timer.start_timer()
         if w == '':
-                return redirect(url_for('select'))
+            jdb.reset()
+            return redirect(url_for('select'))
         
         return render_template("japanese.html", word=w)
     else:

@@ -19,13 +19,15 @@
 
 .flashcard{
     display: flex;
+    justify-content: center;
     flex-direction: column;
     align-items: center;
+    
     padding: 12px 19px;
     margin: 10px;
 
     width: 338px;
-    height: 90px;
+    height: 150px;
 
     background: #F8DC7B;
     mix-blend-mode: normal;
