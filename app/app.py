@@ -15,6 +15,7 @@ app.config['SECRET_KEY'] = os.urandom(24)
 mdb = database.memorizeDB()
 adb = database.associationDB()
 jdb = database.japaneseDB()
+fdb = database.feedbackDB()
 ini = database.Initialize()
 timer = f_timer.Timer()
 
@@ -206,6 +207,34 @@ def japanese():
 
         # path = f'static/assets/{jdb.UID}/{jdb.eng}'
         return render_template("japanese.html", word = w)
+
+@app.route("/feedback", methods=["GET", "POST"])
+def feedback():
+    data = {}
+    try:
+        uid = ini.uid
+    except:
+        return redirect(url_for('login'))
+    if request.method == "GET":
+        w = fdb.get_data(ini.uid)
+        if w == '':
+            return redirect(url_for('select'))
+        
+        data['eng'] = fdb.eng
+        data['jpn'] = fdb.jpn
+
+        return render_template("feedback.html", path=fdb.imgurl, data=data)
+    
+    else:
+        li = []
+        for i in range(9):
+            k = "img" + str(i)
+            li.append(request.form[k])
+        fdb.submit(li)
+        fdb.next()
+        data['eng'] = fdb.eng
+        data['jpn'] = fdb.jpn
+        render_template("feedback.html", path=fdb.imgurl, data=data)
 
 if __name__=="__main__":
     app.run(host="0.0.0.0", port=80,debug=True)

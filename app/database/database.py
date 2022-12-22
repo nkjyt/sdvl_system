@@ -255,6 +255,63 @@ class associationDB():
 
             doc[word]['show'] = True
             self.db.collection("association").document(self.UID).update({word: doc[word]})
+
+class feedbackDB():
+    def __init__(self):
+        Initialize()
+        self.db = firestore.client()
+        self.data = []
+        self.index = 0
+        self.imgurl = []
+        self.eng = ''
+        self.jpn = ''
+        self.pos = ''
+    
+    def get_data(self, UID):
+        self.UID = UID
+        self.index = 0
+        self.data = []
+        if self.data == []:
+            print("データベースから初期化します")
+            doc_ref = self.db.collection("memorize").document(UID)
+            doc = doc_ref.get().to_dict()
+
+            for word in doc.keys():
+                self.data.append(doc[word])
+
+        if self.data == []:
+            return ''
+        
+        self.imgurl = self.data[self.index]['img']
+        self.eng = self.data[self.index]['word']
+        self.jpn = self.data[self.index]['jpn']
+    
+
+        return self.eng
+    
+    def next(self):
+        self.index += 1
+        if self.index < len(self.data):
+            self.eng = self.data[self.index]['word']
+            self.jpn = self.data[self.index]['jpn']
+            self.imgurl = self.data[self.index]['img']
+            return True
+        else:
+            self.index = 0
+            return False
+
+    def submit(self, fe):
+        feed = {
+            "1" : "良い",
+            "2" : "悪い"
+        }
+        print(fe)
+        #urlからファイル名を取っておく
+        # res = {}
+        # for k,v in feed.items():
+        #     f = k.split("/")[-1]
+        #     res[f] = v
+        # self.db.collection("feedback").document(self.UID).update({self.eng : res})
 # class japaneseDB():
 
 #     def __init__(self):
