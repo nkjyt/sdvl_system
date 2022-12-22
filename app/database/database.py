@@ -112,14 +112,15 @@ class memorizeDB():
         #         if self.data[i]['show']:
         #             tmp.append(v)
         #     self.data = tmp
-        
+        print(self.data)
+        if self.data == []:
+            return ''
+            
         self.imgurl = []
         for i in random.sample(self.data[self.index]['img'],3):
             self.imgurl.append(i)
 
-        print(self.data)
-        if self.data == []:
-            return ''
+        
         random.shuffle(self.data)
         self.imgurl = self.data[self.index]['img']
         self.eng = self.data[self.index]['word']
