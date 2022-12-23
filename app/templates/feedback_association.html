@@ -21,10 +21,13 @@
 
       <div class="wrap-image">
             
-        <form action="/feedback" method="POST">
-            {% for i in range(data['len']) %}
-            <img class="mt-3" src="{{path[i]}}" alt="img"><br>
+        <form action="/feedback_association" method="POST">
+            {% for i in range(data['length'])%}
+            
+            <img class="mt-5" src="{{path[i]}}" alt="img">
+            <h5>{{data['keywords'][i]}}</h5>
             <div class="d-flex justify-content-center">
+                
             <label><input type="radio" value="bad" name="img{{i}}" />分からない</label>
             <label><input class="ms-5" type="radio" value="good" name="img{{i}}" />合っている</label> 
             <br>

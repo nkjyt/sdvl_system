@@ -16,6 +16,7 @@ mdb = database.memorizeDB()
 adb = database.associationDB()
 jdb = database.japaneseDB()
 fdb = database.feedbackDB()
+fadb = database.feedback_associationDB()
 ini = database.Initialize()
 timer = f_timer.Timer()
 
@@ -226,15 +227,57 @@ def feedback():
         return render_template("feedback.html", path=fdb.imgurl, data=data)
     
     else:
-        li = []
+        fb = []
         for i in range(9):
             k = "img" + str(i)
-            li.append(request.form[k])
-        fdb.submit(li)
+            fb.append({
+                "url" : fdb.imgurl[i],
+                "feedback" : request.form[k]})
+        fdb.submit(fb, fdb.eng)
         fdb.next()
+        if not fdb.next():
+                return redirect(url_for("select"))
+            
         data['eng'] = fdb.eng
         data['jpn'] = fdb.jpn
-        render_template("feedback.html", path=fdb.imgurl, data=data)
+        return render_template("feedback.html", path=fdb.imgurl, data=data)
+
+
+@app.route("/feedback_association", methods=["GET", "POST"])
+def feedback_association():
+    data = {}
+    try:
+        uid = ini.uid
+    except:
+        return redirect(url_for('login'))
+    if request.method == "GET":
+        w = fadb.get_data(ini.uid)
+        if w == '':
+            return redirect(url_for('select'))
+        
+        data['eng'] = fadb.eng
+        data['jpn'] = fadb.jpn
+        data['keywords'] = fadb.imgName
+        data['length'] = len(fadb.imgName)
+        return render_template("feedback_association.html", path=fadb.imgurl, data=data)
+    
+    else:
+        fb = []
+        for i in range(len(fadb.imgurl)):
+            k = "img" + str(i)
+            fb.append({
+                "url" : fadb.imgurl[i],
+                "feedback" : request.form[k]})
+        fadb.submit(fb, fadb.eng)
+        fadb.next()
+        if not fadb.next():
+                return redirect(url_for("select"))
+            
+        data['eng'] = fadb.eng
+        data['jpn'] = fadb.jpn
+        data['keywords'] = fadb.imgName
+        data['length'] = len(fadb.imgName)
+        return render_template("feedback_association.html", path=fadb.imgurl, data=data)
 
 if __name__=="__main__":
     app.run(host="0.0.0.0", port=80,debug=True)

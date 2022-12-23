@@ -300,18 +300,86 @@ class feedbackDB():
             self.index = 0
             return False
 
-    def submit(self, fe):
-        feed = {
-            "1" : "良い",
-            "2" : "悪い"
-        }
+    def submit(self, fe, word):
         print(fe)
-        #urlからファイル名を取っておく
-        # res = {}
-        # for k,v in feed.items():
-        #     f = k.split("/")[-1]
-        #     res[f] = v
-        # self.db.collection("feedback").document(self.UID).update({self.eng : res})
+        # urlからファイル名を取っておく
+        res = []
+        for data in fe:
+            f = data["url"].split("/")[-1]
+            res.append({
+                "url" : data["url"],
+                "file" : f,
+                "feedback" : data["feedback"]
+            })
+        self.db.collection("feedback").document(self.UID).update({word : res})
+
+class feedback_associationDB():
+    def __init__(self):
+        Initialize()
+        self.db = firestore.client()
+        self.data = []
+        self.index = 0
+        self.imgurl = []
+        self.imgName = []
+        self.eng = ''
+        self.jpn = ''
+        self.pos = ''
+    
+    def get_data(self, UID):
+        self.UID = UID
+        self.index = 0
+        self.data = []
+        if self.data == []:
+            print("データベースから初期化します")
+            doc_ref = self.db.collection("association").document(UID)
+            doc = doc_ref.get().to_dict()
+
+            for word in doc.keys():
+                self.data.append(doc[word])
+
+        if self.data == []:
+            return ''
+
+        self.imgurl = []
+        self.imgName = []
+        for i in self.data[self.index]['url'].keys():
+            self.imgName.append(" ".join(i.split("_")))
+            self.imgurl.append(self.data[self.index]['url'][i])
+
+        self.eng = self.data[self.index]['word']
+        self.jpn = self.data[self.index]['jpn']
+    
+
+        return self.eng
+    
+    def next(self):
+        self.index += 1
+        if self.index < len(self.data):
+            self.eng = self.data[self.index]['word']
+            self.jpn = self.data[self.index]['jpn']
+            self.imgurl = []
+            self.imgName = []
+            for i in self.data[self.index]['url'].keys():
+                self.imgName.append(" ".join(i.split("_")))
+                self.imgurl.append(self.data[self.index]['url'][i])
+            return True
+        else:
+            self.index = 0
+            return False
+
+    def submit(self, fe, word):
+        print(fe)
+        # urlからファイル名を取っておく
+        res = []
+        for data in fe:
+            f = data["url"].split("/")[-1]
+            res.append({
+                "url" : data["url"],
+                "file" : f,
+                "feedback" : data["feedback"]
+            })
+        print(res)
+        # self.db.collection("feedback_association").document(self.UID).update({word : res})
 # class japaneseDB():
 
 #     def __init__(self):
