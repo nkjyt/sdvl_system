@@ -15,8 +15,9 @@ app.config['SECRET_KEY'] = os.urandom(24)
 mdb = database.memorizeDB()
 adb = database.associationDB()
 jdb = database.japaneseDB()
-fdb = database.feedbackDB()
-fadb = database.feedback_associationDB()
+# fdb = database.feedbackDB()
+# fadb = database.feedback_associationDB()
+andb = database.annotationDB()
 ini = database.Initialize()
 timer = f_timer.Timer()
 
@@ -209,75 +210,96 @@ def japanese():
         # path = f'static/assets/{jdb.UID}/{jdb.eng}'
         return render_template("japanese.html", word = w)
 
-@app.route("/feedback", methods=["GET", "POST"])
-def feedback():
-    data = {}
+@app.route("/annotation", methods=["GET", "POST"])
+def annotaion():
     try:
         uid = ini.uid
     except:
         return redirect(url_for('login'))
+
     if request.method == "GET":
-        w = fdb.get_data(ini.uid)
-        if w == '':
-            return redirect(url_for('select'))
-        
-        data['eng'] = fdb.eng
-        data['jpn'] = fdb.jpn
-
-        return render_template("feedback.html", path=fdb.imgurl, data=data)
-    
+        andb.get_data(uid)
+        timer.start_timer()
+        return render_template("annotation.html", word=andb.eng, defs=andb.defs, path=andb.imgurl)
     else:
-        fb = []
-        for i in range(9):
-            k = "img" + str(i)
-            fb.append({
-                "url" : fdb.imgurl[i],
-                "feedback" : request.form[k]})
-        fdb.submit(fb, fdb.eng)
-        fdb.next()
-        if not fdb.next():
-                return redirect(url_for("select"))
-            
-        data['eng'] = fdb.eng
-        data['jpn'] = fdb.jpn
-        return render_template("feedback.html", path=fdb.imgurl, data=data)
-
-
-@app.route("/feedback_association", methods=["GET", "POST"])
-def feedback_association():
-    data = {}
-    try:
-        uid = ini.uid
-    except:
-        return redirect(url_for('login'))
-    if request.method == "GET":
-        w = fadb.get_data(ini.uid)
-        if w == '':
-            return redirect(url_for('select'))
+        feedback = []
+        for i in range(3):
+            key = "img" + str(i)
+            feedback.append(request.form[key])
+        andb.submit(andb.eng, feedback)
+        if not andb.next():
+            return redirect(url_for("select"))
         
-        data['eng'] = fadb.eng
-        data['jpn'] = fadb.jpn
-        data['keywords'] = fadb.imgName
-        data['length'] = len(fadb.imgName)
-        return render_template("feedback_association.html", path=fadb.imgurl, data=data)
+        return render_template("annotation.html", word=andb.eng, defs=andb.defs, path=andb.imgurl)
+# @app.route("/feedback", methods=["GET", "POST"])
+# def feedback():
+#     data = {}
+#     try:
+#         uid = ini.uid
+#     except:
+#         return redirect(url_for('login'))
+#     if request.method == "GET":
+#         w = fdb.get_data(ini.uid)
+#         if w == '':
+#             return redirect(url_for('select'))
+        
+#         data['eng'] = fdb.eng
+#         data['jpn'] = fdb.jpn
+
+#         return render_template("feedback.html", path=fdb.imgurl, data=data)
     
-    else:
-        fb = []
-        for i in range(len(fadb.imgurl)):
-            k = "img" + str(i)
-            fb.append({
-                "url" : fadb.imgurl[i],
-                "feedback" : request.form[k]})
-        fadb.submit(fb, fadb.eng)
-        fadb.next()
-        if not fadb.next():
-                return redirect(url_for("select"))
+#     else:
+#         fb = []
+#         for i in range(9):
+#             k = "img" + str(i)
+#             fb.append({
+#                 "url" : fdb.imgurl[i],
+#                 "feedback" : request.form[k]})
+#         fdb.submit(fb, fdb.eng)
+#         fdb.next()
+#         if not fdb.next():
+#                 return redirect(url_for("select"))
             
-        data['eng'] = fadb.eng
-        data['jpn'] = fadb.jpn
-        data['keywords'] = fadb.imgName
-        data['length'] = len(fadb.imgName)
-        return render_template("feedback_association.html", path=fadb.imgurl, data=data)
+#         data['eng'] = fdb.eng
+#         data['jpn'] = fdb.jpn
+#         return render_template("feedback.html", path=fdb.imgurl, data=data)
+
+
+# @app.route("/feedback_association", methods=["GET", "POST"])
+# def feedback_association():
+#     data = {}
+#     try:
+#         uid = ini.uid
+#     except:
+#         return redirect(url_for('login'))
+#     if request.method == "GET":
+#         w = fadb.get_data(ini.uid)
+#         if w == '':
+#             return redirect(url_for('select'))
+        
+#         data['eng'] = fadb.eng
+#         data['jpn'] = fadb.jpn
+#         data['keywords'] = fadb.imgName
+#         data['length'] = len(fadb.imgName)
+#         return render_template("feedback_association.html", path=fadb.imgurl, data=data)
+    
+#     else:
+#         fb = []
+#         for i in range(len(fadb.imgurl)):
+#             k = "img" + str(i)
+#             fb.append({
+#                 "url" : fadb.imgurl[i],
+#                 "feedback" : request.form[k]})
+#         fadb.submit(fb, fadb.eng)
+#         fadb.next()
+#         if not fadb.next():
+#                 return redirect(url_for("select"))
+            
+#         data['eng'] = fadb.eng
+#         data['jpn'] = fadb.jpn
+#         data['keywords'] = fadb.imgName
+#         data['length'] = len(fadb.imgName)
+#         return render_template("feedback_association.html", path=fadb.imgurl, data=data)
 
 if __name__=="__main__":
     app.run(host="0.0.0.0", port=80,debug=True)

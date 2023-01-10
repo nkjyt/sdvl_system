@@ -322,7 +322,7 @@ class feedback_associationDB():
         self.imgurl = []
         self.imgName = []
         self.eng = ''
-        self.jpn = ''
+        self.defs = []
         self.pos = ''
     
     def get_data(self, UID):
@@ -380,56 +380,52 @@ class feedback_associationDB():
             })
         print(res)
         # self.db.collection("feedback_association").document(self.UID).update({word : res})
-# class japaneseDB():
 
-#     def __init__(self):
-#         with open("firebaseConfig.json") as f:
-#             firebaseConfig = json.loads(f.read())
-#         firebase = pyrebase.initialize_app(firebaseConfig)
-#         self.db = firebase.database()
-#         self.data = []
-#         self.index = 0
+class annotationDB():
+    def __init__(self):
+        Initialize()
+        self.db = firestore.client()
+        self.data = []
+        self.index = 0
+        self.imgurl = {}
+        self.imgName = []
+        self.eng = ''
+        self.jpn = ''
+        self.pos = ''
     
-#     def getUserWords(self, UID):
-#         self.UID = UID
-#         self.index = 0
-#         if self.data == []:
-#             print("データベースから初期化します")
-#             for words in self.db.child("japanese").child(self.UID).get().each():
-#                 if words.val()['show']:
-#                     self.data.append(words.val())
-#         else:
-#             print("ローカルから読みこみます")
-#             tmp = []
-#             for i, v in enumerate(self.data):
-#                 if self.data[i]['show']:
-#                     tmp.append(v)
-#             self.data = tmp
-#         print(self.data)
-#         if self.data == []:
-#             return ''
-#         random.shuffle(self.data)
-#         self.eng = self.data[self.index]['word']
-#         self.jpn = self.data[self.index]['jpn']
-#         print(self.data)
+    def get_data(self, UID):
+        self.UID = UID
+        self.index = 0
+        self.data = []
 
-#         return self.eng
+        if self.data == []:
+            doc_ref = self.db.collection("annotation_words").document("000")
+            doc = doc_ref.get().to_dict()
+            words = doc['words']
 
-#     def nextWord(self):
-#         self.index += 1
-#         if self.index < len(self.data):
-#             self.eng = self.data[self.index]['word']
-#             self.jpn = self.data[self.index]['jpn']
-#             return True
-#         else:
-#             self.index = 0
-#             return False
+            for word in words:
+                word_data = self.db.collection("word_data").document(word).get().to_dict()
+                self.data.append(word_data)
 
-#     def remembered(self):
-#         self.data[self.index]['remembered'] += 1
-#         self.data[self.index]['show'] = False
-#         self.db.child("japanese").child(self.UID).child(self.data[self.index]['word']).update(self.data[self.index])
+        print(f"words : {self.data[self.index]}")
+        
+        self.eng = self.data[self.index]['word']
+        self.defs = self.data[self.index]['definitions']
+        self.imgurl = self.data[self.index]['url']
+    
+    def next(self):
+        self.index += 1
+        if self.index < len(self.data):
+            self.eng = self.data[self.index]['word']
+            self.defs = self.data[self.index]['definitions']
+            self.imgurl = self.data[self.index]['url']
+            return True
+        else:
+            self.index = 0
+            return False
 
-#     def notRemembered(self):
-#         self.data[self.index]['not_remembered'] += 1
-#         self.db.child("japanese").child(self.UID).child(self.data[self.index]['word']).update(self.data[self.index])
+    def submit(self, word, feedback):
+        try:
+            self.db.collection("user").document(self.UID).update({word : feedback})
+        except:
+            self.db.collection("user").document(self.UID).set({word : feedback})

@@ -1,0 +1,60 @@
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>SDVL</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+
+<div>
+  <div class="header">
+    <p class="font30px">annotation</p>
+  </div>
+  <div class="container">
+    <div class="funcBody">
+
+      <h3>{{word}}</h3><br>
+      <h4>定義</h4><br>
+      {% for def in defs %}
+        <h4>{{def}}</h4><br>
+      {% endfor %}
+
+      <form action="/annotation" method="POST">
+        {% for i in range(3) %}
+            <img class="mt-5" src="{{path[i]}}" alt="img"><br>
+            <div class="d-flex justify-content-center">
+                <label><input type="radio" value="bad" name="img{{i}}" />違う</label>
+                <div class="mx-3"></div>
+                <label><input class="" type="radio" value="unknown" name="img{{i}}" />分からない</label>
+                <div class="mx-3"></div>
+                <label><input class="" type="radio" value="good" name="img{{i}}" />合っている</label> 
+            <br>
+            </div>
+
+      {% endfor %}
+      
+      
+        <div class="d-flex justify-content-center mt-5">
+            <button type="submit" class="btn btn-secondary btn-lg m-auto" >次へ</button>
+        </div>
+      </form>
+
+
+      </div>
+  
+    </div>
+  </div>
+  
+
+  
+    
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+  <link rel="stylesheet" href="/static/css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+</div>
+
+</body>
+</html>
