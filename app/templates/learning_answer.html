@@ -15,26 +15,30 @@
   </div>
   <div class="container">
     <div class="position-absolute top-0 end-0 m-2"><p>{{idx}} / {{maxLen}}</p></div>
+    <h3 class="">正しいのは・・・</h3>
     <div class="funcBody text-center">
-      
+    
+      {% if answer %}
+        <img src="/static/maru.png" class="marubatsu mb-5" alt="img">
+      {% else %}
+        <img src="/static/batsu.png" class="marubatsu mb-5" alt="img">
+      {% endif %}
+
+
         <h1 class="border border-5">{{word}}</h1><br>
         {% for def in defs %}
             <h5>{{def}}</h5><br>
         {% endfor %}
 
-        <img class="m-3" src="{{path}}" alt="img"><br>
-
-        <form action="/learning/answer">
-            <div class="row justify-content-around">
-              <div class="col">
-                <button type="submit" name="answer" value="False" formmethod="POST" class="btn btn-primary rounded-circle p-0 m-3" style="width:5rem;height:5rem;">×</button>
-              </div>
-              <div class="col">
-                <button type="submit" name="answer" value="True" formmethod="POST" class="btn btn-danger rounded-circle p-0 m-3" style="width:5rem;height:5rem;">〇</button>
-              </div>
-            </div>
+        <img class="mt-3" src="{{path}}" alt="img"><br>
+        {% if not answer %}
+          <h4>もとになった単語：{{imgWord}}</h4>
+        {% endif %}
+        <form action="/learning" method="POST">
+          <div class="d-flex justify-content-center mt-2">
+            <button type="submit" class="btn btn-secondary btn-lg m-auto" >次へ</button>
+          </div>
         </form>
-
 
       </div>
   

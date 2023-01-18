@@ -266,12 +266,35 @@ def learning():
         return render_template("learning.html", word=ldb.eng, defs=ldb.defs,
          path=ldb.imgurl,  maxLen=ldb.maxLen, idx=ldb.index+1)
     else:
-        answer = request.form['answer']
-        ldb.submit(answer=answer)
+        # answer = request.form['answer']
+        # if ldb.check_answer(answer=answer):
+        #     #正解
+        #     return render_template("")
+        # else:
+        #     #不正解
+        #     return render_template("")
+        # ldb.submit(answer=answer)
         if not ldb.next():
             return redirect(url_for("select"))
         return render_template("learning.html", word=ldb.eng, defs=ldb.defs,
          path=ldb.imgurl, maxLen=ldb.maxLen, idx=ldb.index+1)
+
+@app.route("/learning/answer", methods=["GET", "POST"])
+def learning_answer():
+    if request.method == "POST":
+        answer = request.form['answer']
+        ldb.submit(answer=answer)
+        if ldb.isMatch:
+            #正解
+            return render_template("learning_answer.html",word=ldb.eng, defs=ldb.defs,
+         path=ldb.imgurl, maxLen=ldb.maxLen, idx=ldb.index+1, answer=True)
+        else:
+            #不正解
+            trueWord = ldb.imgurl.split("/")[-1].split("_")[0]
+            return render_template("learning_answer.html",word=ldb.eng, defs=ldb.defs,
+         path=ldb.imgurl, maxLen=ldb.maxLen, idx=ldb.index+1, answer=False, imgWord = trueWord)
+
+
 # @app.route("/feedback", methods=["GET", "POST"])
 # def feedback():
 #     data = {}

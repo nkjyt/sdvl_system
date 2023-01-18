@@ -523,3 +523,14 @@ class learningDB():
             self.db.collection("learning_log").document(self.UID).update({stamp: data})
         except:
             self.db.collection("learning_log").document(self.UID).set({stamp: data})
+    
+    #正解不正解の判定
+    def check_answer(self, answer):
+        if answer=="True":
+            ans = True
+        else:
+            ans = False
+        if ans == self.isMatch:
+            return True
+        else:
+            return False
