@@ -393,13 +393,17 @@ class annotationDB():
         self.jpn = ''
         self.pos = ''
     
-    def get_data(self, UID):
+    def get_wordlist(self):
+        li = self.db.collection("settings").document("wordlist").get().to_dict()["wordlist"]
+        return li
+
+    def get_data(self, UID, wordlist):
         self.UID = UID
         self.index = 0
         self.data = []
 
         if self.data == []:
-            doc_ref = self.db.collection("annotation_words").document("000")
+            doc_ref = self.db.collection("annotation_words").document(str(wordlist))
             doc = doc_ref.get().to_dict()
             words = doc['words']
 
@@ -416,6 +420,7 @@ class annotationDB():
     def next(self):
         self.index += 1
         if self.index < len(self.data):
+            print(self.data[self.index])
             self.eng = self.data[self.index]['word']
             self.defs = self.data[self.index]['definitions']
             self.imgurl = self.data[self.index]['url']
@@ -429,3 +434,89 @@ class annotationDB():
             self.db.collection("user").document(self.UID).update({word : feedback})
         except:
             self.db.collection("user").document(self.UID).set({word : feedback})
+
+class learningDB():
+    def __init__(self):
+        Initialize()
+        self.db = firestore.client()
+        self.data = []
+        self.index = 0
+        self.allurl = {}
+        self.eng = ''
+        self.isMatch = True
+
+    def get_img_url(self, urls, li):
+        res = []
+        for index in li:
+            res.append(urls[index])
+        return res
+
+    def shuffle(self):
+        print("shuffle")
+        i = random.randrange(2)
+        if i == 0:
+            #正解
+            print("正解")
+            print(f"単語:{self.eng}, url:{self.allurl[self.eng]}")
+            self.imgurl = random.choice(self.allurl[self.eng])
+            self.isMatch = True
+        else:
+            #不正解
+            print("不正解")
+            print(f"単語:{self.eng}, url:{self.allurl[self.eng]}")
+            self.imgurl = random.choice(random.choice(list(self.allurl.values())))
+            while self.imgurl in self.allurl[self.eng]:
+                self.imgurl = random.choice(random.choice(list(self.allurl.values())))
+            print(f"選ばれたURL:{self.imgurl}")
+            self.isMatch = False
+            
+    def get_data(self, UID, wordlist=""):
+        self.UID = UID
+        self.index = 0
+        self.data = []
+
+        if self.data == []:
+            doc_ref = self.db.collection("learning_data").document("sample")
+            doc = doc_ref.get().to_dict()
+            words = doc['good_words']
+
+            for word, li in words.items():
+                word_data = self.db.collection("word_data_test").document(word).get().to_dict()
+                self.allurl[word] = self.get_img_url(word_data['url'], li)
+                self.data.append(word_data)
+            
+        self.eng = self.data[self.index]['word']
+        self.defs = self.data[self.index]['definitions']
+        print(self.allurl)
+        self.shuffle()
+
+        print(f"words : {self.data[self.index]}")
+    
+    def next(self):
+        self.index += 1
+        if self.index < len(self.data):
+            self.eng = self.data[self.index]['word']
+            self.defs = self.data[self.index]['definitions']
+            self.shuffle()
+            return True
+        else:
+            self.index = 0
+            return False
+    
+    def submit(self, answer):
+        if answer=="True":
+            ans = True
+        else:
+            ans = False
+        data = {
+            "answer" : ans,
+            "isMatch" : self.isMatch,
+            "word" : self.eng,
+            "displayed_img" : self.imgurl
+        }
+        dt_now = datetime.datetime.now()
+        stamp = dt_now.strftime('%Y_%m_%d_%H_%M_%S')
+        try:
+            self.db.collection("learning_log").document(self.UID).update({stamp: data})
+        except:
+            self.db.collection("learning_log").document(self.UID).set({stamp: data})

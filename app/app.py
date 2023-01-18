@@ -3,6 +3,7 @@ import pyrebase
 import json, os, re
 import database.database as database
 import database.timer as f_timer
+import deepl
 
 with open("firebaseConfig.json") as f:
     firebaseConfig = json.loads(f.read())
@@ -18,6 +19,7 @@ jdb = database.japaneseDB()
 # fdb = database.feedbackDB()
 # fadb = database.feedback_associationDB()
 andb = database.annotationDB()
+ldb = database.learningDB()
 ini = database.Initialize()
 timer = f_timer.Timer()
 
@@ -218,19 +220,53 @@ def annotaion():
         return redirect(url_for('login'))
 
     if request.method == "GET":
-        andb.get_data(uid)
+        wordlist = request.args.get('wordlist', "")
+        print(wordlist)
+        andb.get_data(uid, wordlist)
         timer.start_timer()
-        return render_template("annotation.html", word=andb.eng, defs=andb.defs, path=andb.imgurl)
+        return render_template("annotation.html", word=andb.eng, defs=andb.defs, path=andb.imgurl, isTrans=False)
     else:
-        feedback = []
-        for i in range(3):
-            key = "img" + str(i)
-            feedback.append(request.form[key])
-        andb.submit(andb.eng, feedback)
+        try:
+            feedback = []
+            for i in range(3):
+                key = "img" + str(i)
+                feedback.append(request.form[key])
+            andb.submit(andb.eng, feedback)
+        except:
+            print("not selected")
         if not andb.next():
             return redirect(url_for("select"))
         
-        return render_template("annotation.html", word=andb.eng, defs=andb.defs, path=andb.imgurl)
+        return render_template("annotation.html", word=andb.eng, defs=andb.defs, path=andb.imgurl, isTrans=False)
+
+@app.route("/annotation/translate", methods=["GET", "POST"])
+def annotation_translate():
+    translator = deepl.Translator("2c1055ac-4792-7f39-4a6d-e4a77e5763ec")
+    result = translator.translate_text("\n".join(andb.defs), target_lang="JA")
+    print(result)
+
+    return render_template("annotation.html", word=andb.eng, defs=andb.defs, path=andb.imgurl, isTrans=True, jpn=result)
+
+@app.route("/select/wordset", methods=["GET", "POST"])
+def select_wordset():
+    li = andb.get_wordlist()
+    return render_template("select_wordset.html", index_list=li)
+
+@app.route("/learning", methods=["GET", "POST"])
+def learning():
+    try:
+        uid = "OTattFQ8vHf1iuPZv94sE3Gj3G22"
+    except:
+        return redirect(url_for('login'))
+    if request.method == "GET":
+        ldb.get_data(UID=uid)
+        return render_template("learning.html", word=ldb.eng, defs=ldb.defs, path=ldb.imgurl)
+    else:
+        answer = request.form['answer']
+        ldb.submit(answer=answer)
+        if not ldb.next():
+            return redirect(url_for("select"))
+        return render_template("learning.html", word=ldb.eng, defs=ldb.defs, path=ldb.imgurl)
 # @app.route("/feedback", methods=["GET", "POST"])
 # def feedback():
 #     data = {}

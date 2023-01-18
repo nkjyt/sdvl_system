@@ -11,16 +11,18 @@
 <body>
 
 <div class="container">
-    <h1>メールアドレスとパスワードを入力してください</h1>
+  <div class="text-center mt-5">
+    <h3 class="mb-5">メールアドレスとパスワードを入力してください</h1>
     <form action='login' method='POST'>
-        <input type='text' name='email' id='email' placeholder='email'/>
+        <input class="m-1" type='text' name='email' id='email' placeholder='email'/>
         <br/>
-        <input type="text" name="password" id="password" placeholder="password">
+        <input class="m-1" type="text" name="password" id="password" placeholder="password">
         <br>
-        <input type='submit' name='submit'/>
+        <input class="m-3" type='submit' name='submit'/>
         <br>
     </form>
     <h2 style="color:orangered;">{{msg}}</h2>
+  </div>
 </div>
 
 </body>

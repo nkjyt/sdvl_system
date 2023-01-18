@@ -16,11 +16,21 @@
   <div class="container">
     <div class="funcBody">
 
-      <h3>{{word}}</h3><br>
-      <h4>定義</h4><br>
+      <h2>{{word}}</h2><br>
       {% for def in defs %}
-        <h4>{{def}}</h4><br>
+        <h5>{{def}}</h5><br>
       {% endfor %}
+
+      {% if isTrans %}
+        <h4>{{jpn}}</h4>
+      {% else %}
+        <form action="/annotation/translate" method="POST">
+            <div class="d-flex justify-content-center mt-3">
+                <button type="submit" class="btn btn-secondary btn-lg m-auto" name="translate" value="y">translate</button>
+            </div>
+        </form>
+      {% endif %}
+        
 
       <form action="/annotation" method="POST">
         {% for i in range(3) %}

@@ -12,18 +12,17 @@
 <div class="container ">
 
   <div class="text-center">
-    <h1 class="m-3">モードを選択してください</h1>
-    <div class="float-center m-3">
-      <h3>今日の学習時間　{{time_log}}</h3>
-      <div class="float-end"><p>(0時にリセットされます)</p></div>
-    </div><br>
+    <h1 class="m-3">単語セットを選択してください</h1>
   </div>
   
   <div class="text-center mt-5">
-    <button onclick="location.href='/select/wordset'" class="btn-primary fs-3 m-3 text-decoration-none">annotation</button><br>
-    <button onclick="location.href='/learning'" class="btn-warning fs-3 m-3 text-decoration-none">シャッフルクイズ</button><br>
-
-  </div>
+    <form action="/annotation">
+        {% for i in index_list %}
+            <button type="submit" formmethod="GET" name="wordlist" value="{{i}}" class="btn-danger fs-3 m-3 text-decoration-none">{{i}}</button><br>
+        {% endfor %}
+    
+    </form>
+    </div>
   
 </div>
 
