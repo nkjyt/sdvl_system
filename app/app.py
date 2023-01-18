@@ -224,7 +224,8 @@ def annotaion():
         print(wordlist)
         andb.get_data(uid, wordlist)
         timer.start_timer()
-        return render_template("annotation.html", word=andb.eng, defs=andb.defs, path=andb.imgurl, isTrans=False)
+        return render_template("annotation.html", word=andb.eng, defs=andb.defs,
+         path=andb.imgurl, isTrans=False, maxLen=andb.maxLen, idx=andb.index+1)
     else:
         try:
             feedback = []
@@ -237,7 +238,8 @@ def annotaion():
         if not andb.next():
             return redirect(url_for("select"))
         
-        return render_template("annotation.html", word=andb.eng, defs=andb.defs, path=andb.imgurl, isTrans=False)
+        return render_template("annotation.html", word=andb.eng, defs=andb.defs, path=andb.imgurl,
+         isTrans=False, maxLen=andb.maxLen, idx=andb.index+1)
 
 @app.route("/annotation/translate", methods=["GET", "POST"])
 def annotation_translate():
@@ -245,7 +247,8 @@ def annotation_translate():
     result = translator.translate_text("\n".join(andb.defs), target_lang="JA")
     print(result)
 
-    return render_template("annotation.html", word=andb.eng, defs=andb.defs, path=andb.imgurl, isTrans=True, jpn=result)
+    return render_template("annotation.html", word=andb.eng, defs=andb.defs, path=andb.imgurl,
+     isTrans=True, jpn=result,  maxLen=andb.maxLen, idx=andb.index+1)
 
 @app.route("/select/wordset", methods=["GET", "POST"])
 def select_wordset():
@@ -260,13 +263,15 @@ def learning():
         return redirect(url_for('login'))
     if request.method == "GET":
         ldb.get_data(UID=uid)
-        return render_template("learning.html", word=ldb.eng, defs=ldb.defs, path=ldb.imgurl)
+        return render_template("learning.html", word=ldb.eng, defs=ldb.defs,
+         path=ldb.imgurl,  maxLen=ldb.maxLen, idx=ldb.index+1)
     else:
         answer = request.form['answer']
         ldb.submit(answer=answer)
         if not ldb.next():
             return redirect(url_for("select"))
-        return render_template("learning.html", word=ldb.eng, defs=ldb.defs, path=ldb.imgurl)
+        return render_template("learning.html", word=ldb.eng, defs=ldb.defs,
+         path=ldb.imgurl, maxLen=ldb.maxLen, idx=ldb.index+1)
 # @app.route("/feedback", methods=["GET", "POST"])
 # def feedback():
 #     data = {}

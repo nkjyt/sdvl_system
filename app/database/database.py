@@ -390,8 +390,9 @@ class annotationDB():
         self.imgurl = {}
         self.imgName = []
         self.eng = ''
-        self.jpn = ''
-        self.pos = ''
+        self.index = 0
+        self.maxLen = 20
+
     
     def get_wordlist(self):
         li = self.db.collection("settings").document("wordlist").get().to_dict()["wordlist"]
@@ -444,6 +445,8 @@ class learningDB():
         self.allurl = {}
         self.eng = ''
         self.isMatch = True
+        self.index = 0
+        self.maxLen = 100
 
     def get_img_url(self, urls, li):
         res = []
