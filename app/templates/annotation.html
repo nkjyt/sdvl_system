@@ -37,18 +37,18 @@
         {% for i in range(3) %}
             <img class="mt-5" src="{{path[i]}}" alt="img"><br>
             <div class="d-flex justify-content-center">
-                <label><input type="radio" value="bad" name="img{{i}}" />違う</label>
+                <label><input type="radio" value="bad" name="img{{i}}" style="transform:scale(2.0);"/>　違う</label>
                 <div class="mx-3"></div>
-                <label><input class="" type="radio" value="unknown" name="img{{i}}" />分からない</label>
+                <label><input class="" type="radio" value="unknown" name="img{{i}}" style="transform:scale(2.0);"/>　分からない</label>
                 <div class="mx-3"></div>
-                <label><input class="" type="radio" value="good" name="img{{i}}" />合っている</label> 
+                <label><input class="" type="radio" value="good" name="img{{i}}" style="transform:scale(2.0);"/>　合っている</label> 
             <br>
             </div>
 
       {% endfor %}
       
       
-        <div class="d-flex justify-content-center mt-5">
+        <div class="d-flex justify-content-center mt-3">
             <button type="submit" class="btn btn-secondary btn-lg m-auto" >次へ</button>
         </div>
       </form>
