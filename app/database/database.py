@@ -471,8 +471,9 @@ class learningDB():
 
     def shuffle(self):
         print("shuffle")
-        i = random.randrange(2)
-        if i == 0:
+        st = self.data[self.index]["set"]
+        print(st)
+        if st == "good":
             #正解
             print("正解")
             print(f"単語:{self.eng}, url:{self.allurl[self.eng]}")
@@ -481,10 +482,7 @@ class learningDB():
         else:
             #不正解
             print("不正解")
-            print(f"単語:{self.eng}, url:{self.allurl[self.eng]}")
             self.imgurl = random.choice(random.choice(list(self.allurl.values())))
-            while self.imgurl in self.allurl[self.eng]:
-                self.imgurl = random.choice(random.choice(list(self.allurl.values())))
             print(f"選ばれたURL:{self.imgurl}")
             self.isMatch = False
             
@@ -494,19 +492,27 @@ class learningDB():
         self.data = []
 
         if self.data == []:
-            doc_ref = self.db.collection("learning_data").document("sample")
+            doc_ref = self.db.collection("learning_data").document(UID)
             doc = doc_ref.get().to_dict()
-            words = doc['good_words']
+            words_good = doc['good_words']
+            words_bad = doc['bad_words']
 
-            for word, li in words.items():
-                word_data = self.db.collection("word_data_test").document(word).get().to_dict()
+            for word, li in words_good.items():
+                word_data = self.db.collection("word_data").document(word).get().to_dict()
                 self.allurl[word] = self.get_img_url(word_data['url'], li)
+                word_data["set"] = "good"
                 self.data.append(word_data)
-            
+            for word in words_bad:
+                word_data = self.db.collection("word_data").document(word).get().to_dict()
+                word_data["set"] = "bad"
+                self.data.append(word_data)
+        
+        random.shuffle(self.data)
         self.eng = self.data[self.index]['word']
         self.defs = self.data[self.index]['definitions']
         print(self.allurl)
         self.shuffle()
+        self.maxLen = len(self.data)
 
         print(f"words : {self.data[self.index]}")
     
@@ -549,3 +555,53 @@ class learningDB():
             return True
         else:
             return False
+
+class testDB():
+    def __init__(self):
+        Initialize()
+        self.db = firestore.client()
+        self.data = []
+        self.index = 0
+        self.imgurl = {}
+        self.imgName = []
+        self.eng = ''
+        self.index = 0
+        self.maxLen = 100
+    
+    def get_data(self, UID):
+        self.UID = UID
+        self.index = 0
+        self.data = []
+        if self.data == []:
+            doc_ref = self.db.collection("test_data").document(UID).get().to_dict()
+            self.data = doc_ref["test"]
+        
+        self.eng = self.data[self.index]["word"]
+        self.defs = self.data[self.index]["definitions"]
+    
+    def next(self):
+        self.index += 1
+        if self.index < len(self.data):
+            self.eng = self.data[self.index]['word']
+            self.defs = self.data[self.index]['definitions']
+            return True
+        else:
+            self.index = 0
+            return False
+    
+    def submit(self, answer):
+        if answer=="True":
+            ans = True
+        else:
+            ans = False
+        data = {
+            "answer" : self.data[self.index]['answer'],
+            "word" : self.eng,
+            "defs" : self.defs,
+            "user_ans" : ans
+        }
+
+        try:
+            self.db.collection("test_log").document(self.UID).update({str(self.index): data})
+        except:
+            self.db.collection("test_log").document(self.UID).set({str(self.index): data})

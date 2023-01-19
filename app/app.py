@@ -20,6 +20,7 @@ app.config['SECRET_KEY'] = os.urandom(24)
 # fadb = database.feedback_associationDB()
 andb = database.annotationDB()
 ldb = database.learningDB()
+tdb = database.testDB()
 ini = database.Initialize()
 timer = f_timer.Timer()
 
@@ -265,7 +266,7 @@ def select_wordset():
 @app.route("/learning", methods=["GET", "POST"])
 def learning():
     try:
-        uid = "OTattFQ8vHf1iuPZv94sE3Gj3G22"
+        uid = ini.uid
     except:
         return redirect(url_for('login'))
     if request.method == "GET":
@@ -301,7 +302,21 @@ def learning_answer():
             return render_template("learning_answer.html",word=ldb.eng, defs=ldb.defs,
          path=ldb.imgurl, maxLen=ldb.maxLen, idx=ldb.index+1, answer=False, imgWord = trueWord)
 
-
+@app.route("/test", methods=["GET", "POST"])
+def test():
+    try:
+        uid = ini.uid
+    except:
+        return redirect(url_for('login'))
+    if request.method == "GET":
+        tdb.get_data(uid)
+        return render_template("test.html", word=tdb.eng, defs=tdb.defs, maxLen=tdb.maxLen, idx=tdb.index+1)
+    else:
+        answer = request.form['answer']
+        tdb.submit(answer)
+        if not tdb.next():
+            return redirect(url_for("select"))
+        return render_template("test.html", word=tdb.eng, defs=tdb.defs, maxLen=tdb.maxLen, idx=tdb.index+1)
 # @app.route("/feedback", methods=["GET", "POST"])
 # def feedback():
 #     data = {}
