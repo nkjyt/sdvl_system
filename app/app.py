@@ -13,9 +13,9 @@ auth = firebase.auth()
 app = Flask(__name__, static_folder='./static')
 app.config['SECRET_KEY'] = os.urandom(24)
 
-mdb = database.memorizeDB()
-adb = database.associationDB()
-jdb = database.japaneseDB()
+# mdb = database.memorizeDB()
+# adb = database.associationDB()
+# jdb = database.japaneseDB()
 # fdb = database.feedbackDB()
 # fadb = database.feedback_associationDB()
 andb = database.annotationDB()
@@ -67,150 +67,150 @@ def select():
     except:
         return redirect(url_for('login'))
 
-@app.route("/memorize", methods=['GET', 'POST'])
-def memorize():
-    try:
-        uid = ini.uid
-    except:
-        return redirect(url_for('login'))
+# @app.route("/memorize", methods=['GET', 'POST'])
+# def memorize():
+#     try:
+#         uid = ini.uid
+#     except:
+#         return redirect(url_for('login'))
     
-    if request.method == 'GET':
-        w = mdb.getUserWords(ini.uid)
-        timer.start_timer()
-        if w == '':
-            mdb.reset()
-            return redirect(url_for('select'))
-        return render_template("memorize.html", word = w, path=mdb.imgurl)
-    else:
-        print(request.form['mode'].split(','))
-        act, query = request.form['mode'].split(',')
-        if act == "translate":
-            if mdb.eng==query:
-                w = mdb.jpn
-            else:
-                w = mdb.eng
-        #rememberボタンを押したとき
-        elif act == "next":
-            timer.record_time()
-            if query == "remembered":
-                mdb.remembered()
-            else:
-                mdb.notRemembered()
-            if mdb.nextWord():
-                w = mdb.eng
-            else:
-                return redirect(url_for("select"))
+#     if request.method == 'GET':
+#         w = mdb.getUserWords(ini.uid)
+#         timer.start_timer()
+#         if w == '':
+#             mdb.reset()
+#             return redirect(url_for('select'))
+#         return render_template("memorize.html", word = w, path=mdb.imgurl)
+#     else:
+#         print(request.form['mode'].split(','))
+#         act, query = request.form['mode'].split(',')
+#         if act == "translate":
+#             if mdb.eng==query:
+#                 w = mdb.jpn
+#             else:
+#                 w = mdb.eng
+#         #rememberボタンを押したとき
+#         elif act == "next":
+#             timer.record_time()
+#             if query == "remembered":
+#                 mdb.remembered()
+#             else:
+#                 mdb.notRemembered()
+#             if mdb.nextWord():
+#                 w = mdb.eng
+#             else:
+#                 return redirect(url_for("select"))
 
-        return render_template("memorize.html", word = w, path=mdb.imgurl)
+#         return render_template("memorize.html", word = w, path=mdb.imgurl)
 
-#フラッシュカードを裏返した時の処理
-@app.route("/memorize#card", methods=['POST'])
-def memorize_card():
-    act, query = request.form['mode'].split(',')
-    if act == "translate":
-            if mdb.eng==query:
-                w = mdb.jpn
-            else:
-                w = mdb.eng
-    return render_template("memorize.html", word= w, path=mdb.imgurl)
+# #フラッシュカードを裏返した時の処理
+# @app.route("/memorize#card", methods=['POST'])
+# def memorize_card():
+#     act, query = request.form['mode'].split(',')
+#     if act == "translate":
+#             if mdb.eng==query:
+#                 w = mdb.jpn
+#             else:
+#                 w = mdb.eng
+#     return render_template("memorize.html", word= w, path=mdb.imgurl)
 
-@app.route("/association", methods=['GET', 'POST'])
-def association():
-    try:
-        uid = ini.uid
-    except:
-        return redirect(url_for('login'))
+# @app.route("/association", methods=['GET', 'POST'])
+# def association():
+#     try:
+#         uid = ini.uid
+#     except:
+#         return redirect(url_for('login'))
 
-    data = {
-        "eng" : "",
-        "jpn" : "",
-        "pos" : "",
-        "hint" : "",
-        "keywords" : [],
-    }
-    if request.method == 'GET':
-        w = adb.getUserWords(ini.uid)
-        timer.start_timer()
-        if w == '':
-            adb.reset()
-            return redirect(url_for('select'))
-        else:
-            data['eng'] = adb.eng
-            data['jpn'] = adb.jpn
-            data['pos'] = adb.pos
-            data['hint'] = adb.eng[0] + "*"*(len(adb.eng)-1)
-            data["keywords"] = [rep(word, adb.eng) for word in adb.imgName]
-        return render_template("association.html", word = w, path=adb.imgurl, data = data)
-    else:
-        # adb.submit(request.form['answer'])
-        timer.record_time()
-        if adb.nextWord():
-            data['eng'] = adb.eng
-            data['jpn'] = adb.jpn
-            data['pos'] = adb.pos
-            data['hint'] = adb.eng[0] + "*"*(len(adb.eng)-1)
-            data["keywords"] = [rep(word, adb.eng) for word in adb.imgName]
-            return render_template("association.html", word = adb.eng, path=adb.imgurl, data = data)
-        else:
-            return redirect(url_for('select'))
+#     data = {
+#         "eng" : "",
+#         "jpn" : "",
+#         "pos" : "",
+#         "hint" : "",
+#         "keywords" : [],
+#     }
+#     if request.method == 'GET':
+#         w = adb.getUserWords(ini.uid)
+#         timer.start_timer()
+#         if w == '':
+#             adb.reset()
+#             return redirect(url_for('select'))
+#         else:
+#             data['eng'] = adb.eng
+#             data['jpn'] = adb.jpn
+#             data['pos'] = adb.pos
+#             data['hint'] = adb.eng[0] + "*"*(len(adb.eng)-1)
+#             data["keywords"] = [rep(word, adb.eng) for word in adb.imgName]
+#         return render_template("association.html", word = w, path=adb.imgurl, data = data)
+#     else:
+#         # adb.submit(request.form['answer'])
+#         timer.record_time()
+#         if adb.nextWord():
+#             data['eng'] = adb.eng
+#             data['jpn'] = adb.jpn
+#             data['pos'] = adb.pos
+#             data['hint'] = adb.eng[0] + "*"*(len(adb.eng)-1)
+#             data["keywords"] = [rep(word, adb.eng) for word in adb.imgName]
+#             return render_template("association.html", word = adb.eng, path=adb.imgurl, data = data)
+#         else:
+#             return redirect(url_for('select'))
 
-@app.route("/association/answer", methods=['POST'])
-def post_answer():
-    data = {}
-    answer = request.form['answer']
-    adb.submit(answer)
-    if answer == adb.eng:
-        msg = "正解！"
-    else:
-        msg = "不正解"
-    data['eng'] = adb.eng
-    data['jpn'] = adb.jpn
-    data['pos'] = adb.pos
-    data['answer'] = request.form['answer']
-    data["keywords"] = [rep(word, adb.eng) for word in adb.imgName]
-    return render_template("association_answer.html",path=adb.imgurl, data = data, msg = msg)
+# @app.route("/association/answer", methods=['POST'])
+# def post_answer():
+#     data = {}
+#     answer = request.form['answer']
+#     adb.submit(answer)
+#     if answer == adb.eng:
+#         msg = "正解！"
+#     else:
+#         msg = "不正解"
+#     data['eng'] = adb.eng
+#     data['jpn'] = adb.jpn
+#     data['pos'] = adb.pos
+#     data['answer'] = request.form['answer']
+#     data["keywords"] = [rep(word, adb.eng) for word in adb.imgName]
+#     return render_template("association_answer.html",path=adb.imgurl, data = data, msg = msg)
 
-def rep(st, word):
-    st = st.replace("_", "")
-    st = st.replace(word, "")
-    return st
+# def rep(st, word):
+#     st = st.replace("_", "")
+#     st = st.replace(word, "")
+#     return st
 
-@app.route("/japanese", methods=['GET', 'POST'])
-def japanese():
-    try:
-        uid = ini.uid
-    except:
-        return redirect(url_for('login'))
-    if request.method == 'GET':
-        w = jdb.getUserWords(ini.uid)
-        timer.start_timer()
-        if w == '':
-            jdb.reset()
-            return redirect(url_for('select'))
+# @app.route("/japanese", methods=['GET', 'POST'])
+# def japanese():
+#     try:
+#         uid = ini.uid
+#     except:
+#         return redirect(url_for('login'))
+#     if request.method == 'GET':
+#         w = jdb.getUserWords(ini.uid)
+#         timer.start_timer()
+#         if w == '':
+#             jdb.reset()
+#             return redirect(url_for('select'))
         
-        return render_template("japanese.html", word=w)
-    else:
-        print(request.form['mode'].split(','))
-        act, query = request.form['mode'].split(',')
-        if act == "translate":
-            if jdb.eng==query:
-                w = jdb.jpn
-            else:
-                w = jdb.eng
-        #rememberボタンを押したとき
-        elif act == "next":
-            timer.record_time()
-            if query == "remembered":
-                jdb.remembered()
-            else:
-                jdb.notRemembered()
-            if jdb.nextWord():
-                w = jdb.eng
-            else:
-                return redirect(url_for("select"))
+#         return render_template("japanese.html", word=w)
+#     else:
+#         print(request.form['mode'].split(','))
+#         act, query = request.form['mode'].split(',')
+#         if act == "translate":
+#             if jdb.eng==query:
+#                 w = jdb.jpn
+#             else:
+#                 w = jdb.eng
+#         #rememberボタンを押したとき
+#         elif act == "next":
+#             timer.record_time()
+#             if query == "remembered":
+#                 jdb.remembered()
+#             else:
+#                 jdb.notRemembered()
+#             if jdb.nextWord():
+#                 w = jdb.eng
+#             else:
+#                 return redirect(url_for("select"))
 
-        # path = f'static/assets/{jdb.UID}/{jdb.eng}'
-        return render_template("japanese.html", word = w)
+#         # path = f'static/assets/{jdb.UID}/{jdb.eng}'
+#         return render_template("japanese.html", word = w)
 
 @app.route("/annotation", methods=["GET", "POST"])
 def annotaion():
@@ -250,7 +250,7 @@ def annotation_translate():
     print(type(res))
 
     return render_template("annotation.html", word=andb.eng, defs=andb.defs, path=andb.imgurl,
-     isTrans=True, jpn=res,  maxLen=andb.maxLen, idx=andb.index+1)
+     isTrans=True, jpn=andb.jpn,  maxLen=andb.maxLen, idx=andb.index+1)
 
 @app.route("/select/wordset", methods=["GET", "POST"])
 def select_wordset():
