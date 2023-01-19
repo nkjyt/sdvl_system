@@ -245,14 +245,20 @@ def annotaion():
 def annotation_translate():
     translator = deepl.Translator("2c1055ac-4792-7f39-4a6d-e4a77e5763ec")
     result = translator.translate_text("\n".join(andb.defs), target_lang="JA")
+    res = str(result).split("\n")
     print(result)
+    print(type(res))
 
     return render_template("annotation.html", word=andb.eng, defs=andb.defs, path=andb.imgurl,
-     isTrans=True, jpn=result,  maxLen=andb.maxLen, idx=andb.index+1)
+     isTrans=True, jpn=res,  maxLen=andb.maxLen, idx=andb.index+1)
 
 @app.route("/select/wordset", methods=["GET", "POST"])
 def select_wordset():
-    li = andb.get_wordlist()
+    try:
+        uid = ini.uid
+    except:
+        return redirect(url_for('login'))
+    li = andb.get_wordlist(uid)
     return render_template("select_wordset.html", index_list=li)
 
 @app.route("/learning", methods=["GET", "POST"])

@@ -394,14 +394,19 @@ class annotationDB():
         self.maxLen = 20
 
     
-    def get_wordlist(self):
-        li = self.db.collection("settings").document("wordlist").get().to_dict()["wordlist"]
+    def get_wordlist(self, uid):
+        li = self.db.collection("settings").document(uid).get().to_dict()["wordlist"]
         return li
 
     def get_data(self, UID, wordlist):
         self.UID = UID
         self.index = 0
         self.data = []
+        self.wordlist = str(wordlist)
+        try:
+            self.log = self.db.collection("annotation_log").document(UID).to_dict()[self.wordlist]
+        except:
+            self.log = {}
 
         if self.data == []:
             doc_ref = self.db.collection("annotation_words").document(str(wordlist))
@@ -431,10 +436,11 @@ class annotationDB():
             return False
 
     def submit(self, word, feedback):
+        self.log[word] = feedback
         try:
-            self.db.collection("user").document(self.UID).update({word : feedback})
+            self.db.collection("annotation_log").document(self.UID).update({self.wordlist : self.log})
         except:
-            self.db.collection("user").document(self.UID).set({word : feedback})
+            self.db.collection("annotation_log").document(self.UID).set({self.wordlist : self.log})
 
 class learningDB():
     def __init__(self):

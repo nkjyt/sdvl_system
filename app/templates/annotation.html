@@ -17,13 +17,15 @@
   <div class="container">
     <div class="funcBody">
 
-      <h2>{{word}}</h2><br>
+      <h2 class="border border-5">{{word}}</h2><br>
       {% for def in defs %}
         <h5>{{def}}</h5><br>
       {% endfor %}
 
       {% if isTrans %}
-        <h4>{{jpn}}</h4>
+        {% for j in jpn %}
+          <h4>{{j}}</h4><br>
+        {% endfor %}
       {% else %}
         <form action="/annotation/translate" method="POST">
             <div class="d-flex justify-content-center mt-3">
