@@ -9,10 +9,13 @@
 </head>
 <body>
 
-<div class="container ">
+<div class="container">
 
   <div class="text-center">
     <h1 class="m-3">単語セットを選択してください</h1>
+    {% if annotated != [] %}
+      <h4>完了済：{{annotated}}</h4>
+    {% endif %}
   </div>
   
   <div class="text-center mt-5">

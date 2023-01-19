@@ -243,11 +243,11 @@ def annotaion():
 
 @app.route("/annotation/translate", methods=["GET", "POST"])
 def annotation_translate():
-    translator = deepl.Translator("2c1055ac-4792-7f39-4a6d-e4a77e5763ec")
-    result = translator.translate_text("\n".join(andb.defs), target_lang="JA")
-    res = str(result).split("\n")
-    print(result)
-    print(type(res))
+    # # translator = deepl.Translator("2c1055ac-4792-7f39-4a6d-e4a77e5763ec")
+    # result = translator.translate_text("\n".join(andb.defs), target_lang="JA")
+    # res = str(result).split("\n")
+    # print(result)
+    # print(type(res))
 
     return render_template("annotation.html", word=andb.eng, defs=andb.defs, path=andb.imgurl,
      isTrans=True, jpn=andb.jpn,  maxLen=andb.maxLen, idx=andb.index+1)
@@ -259,7 +259,8 @@ def select_wordset():
     except:
         return redirect(url_for('login'))
     li = andb.get_wordlist(uid)
-    return render_template("select_wordset.html", index_list=li)
+    annotated = andb.get_annotated_list(uid)
+    return render_template("select_wordset.html", index_list=li, annotated=annotated)
 
 @app.route("/learning", methods=["GET", "POST"])
 def learning():

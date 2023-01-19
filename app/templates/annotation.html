@@ -23,9 +23,7 @@
       {% endfor %}
 
       {% if isTrans %}
-        {% for j in jpn %}
-          <h4>{{j}}</h4><br>
-        {% endfor %}
+        <h4>{{jpn}}</h4>
       {% else %}
         <form action="/annotation/translate" method="POST">
             <div class="d-flex justify-content-center mt-3">

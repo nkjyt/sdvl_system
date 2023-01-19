@@ -397,6 +397,13 @@ class annotationDB():
     def get_wordlist(self, uid):
         li = self.db.collection("settings").document(uid).get().to_dict()["wordlist"]
         return li
+    
+    def get_annotated_list(self, uid):
+        try:
+            dic = self.db.collection("annotation_log").document(uid).get().to_dict()
+            return list(dic.keys())
+        except:
+            return []
 
     def get_data(self, UID, wordlist):
         self.UID = UID
