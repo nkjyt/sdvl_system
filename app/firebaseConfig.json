@@ -1,10 +1,10 @@
 {
-    "apiKey": "AIzaSyBdozX5ILkWDD1-1leuppuTcWvOEDf5FW8",
-    "authDomain": "imp-sdvl.firebaseapp.com",
+    "apiKey": "AIzaSyCPrvs1K6pqZrMnvrcVv7hy-IHwvCCTLOw",
+    "authDomain": "sdvl-7ec02.firebaseapp.com",
     "databaseURL": "https://imp-sdvl-default-rtdb.asia-southeast1.firebasedatabase.app",
-    "projectId": "imp-sdvl",
-    "storageBucket": "imp-sdvl.appspot.com",
-    "messagingSenderId": "815118680514",
-    "appId": "1:815118680514:web:e5f297d0cfae81b635165b",
-    "measurementId": "G-H6BR8SCFBG"
+    "projectId": "sdvl-7ec02",
+    "storageBucket":  "sdvl-7ec02.appspot.com",
+    "messagingSenderId":  "413266082467",
+    "appId": "1:413266082467:web:349098ae76260852d31d16",
+    "measurementId": "G-3EQE5NLVX9"
 }

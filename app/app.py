@@ -3,7 +3,6 @@ import pyrebase
 import json, os, re
 import database.database as database
 import database.timer as f_timer
-import deepl
 
 with open("firebaseConfig.json") as f:
     firebaseConfig = json.loads(f.read())
@@ -68,151 +67,6 @@ def select():
     except:
         return redirect(url_for('login'))
 
-# @app.route("/memorize", methods=['GET', 'POST'])
-# def memorize():
-#     try:
-#         uid = ini.uid
-#     except:
-#         return redirect(url_for('login'))
-    
-#     if request.method == 'GET':
-#         w = mdb.getUserWords(ini.uid)
-#         timer.start_timer()
-#         if w == '':
-#             mdb.reset()
-#             return redirect(url_for('select'))
-#         return render_template("memorize.html", word = w, path=mdb.imgurl)
-#     else:
-#         print(request.form['mode'].split(','))
-#         act, query = request.form['mode'].split(',')
-#         if act == "translate":
-#             if mdb.eng==query:
-#                 w = mdb.jpn
-#             else:
-#                 w = mdb.eng
-#         #rememberボタンを押したとき
-#         elif act == "next":
-#             timer.record_time()
-#             if query == "remembered":
-#                 mdb.remembered()
-#             else:
-#                 mdb.notRemembered()
-#             if mdb.nextWord():
-#                 w = mdb.eng
-#             else:
-#                 return redirect(url_for("select"))
-
-#         return render_template("memorize.html", word = w, path=mdb.imgurl)
-
-# #フラッシュカードを裏返した時の処理
-# @app.route("/memorize#card", methods=['POST'])
-# def memorize_card():
-#     act, query = request.form['mode'].split(',')
-#     if act == "translate":
-#             if mdb.eng==query:
-#                 w = mdb.jpn
-#             else:
-#                 w = mdb.eng
-#     return render_template("memorize.html", word= w, path=mdb.imgurl)
-
-# @app.route("/association", methods=['GET', 'POST'])
-# def association():
-#     try:
-#         uid = ini.uid
-#     except:
-#         return redirect(url_for('login'))
-
-#     data = {
-#         "eng" : "",
-#         "jpn" : "",
-#         "pos" : "",
-#         "hint" : "",
-#         "keywords" : [],
-#     }
-#     if request.method == 'GET':
-#         w = adb.getUserWords(ini.uid)
-#         timer.start_timer()
-#         if w == '':
-#             adb.reset()
-#             return redirect(url_for('select'))
-#         else:
-#             data['eng'] = adb.eng
-#             data['jpn'] = adb.jpn
-#             data['pos'] = adb.pos
-#             data['hint'] = adb.eng[0] + "*"*(len(adb.eng)-1)
-#             data["keywords"] = [rep(word, adb.eng) for word in adb.imgName]
-#         return render_template("association.html", word = w, path=adb.imgurl, data = data)
-#     else:
-#         # adb.submit(request.form['answer'])
-#         timer.record_time()
-#         if adb.nextWord():
-#             data['eng'] = adb.eng
-#             data['jpn'] = adb.jpn
-#             data['pos'] = adb.pos
-#             data['hint'] = adb.eng[0] + "*"*(len(adb.eng)-1)
-#             data["keywords"] = [rep(word, adb.eng) for word in adb.imgName]
-#             return render_template("association.html", word = adb.eng, path=adb.imgurl, data = data)
-#         else:
-#             return redirect(url_for('select'))
-
-# @app.route("/association/answer", methods=['POST'])
-# def post_answer():
-#     data = {}
-#     answer = request.form['answer']
-#     adb.submit(answer)
-#     if answer == adb.eng:
-#         msg = "正解！"
-#     else:
-#         msg = "不正解"
-#     data['eng'] = adb.eng
-#     data['jpn'] = adb.jpn
-#     data['pos'] = adb.pos
-#     data['answer'] = request.form['answer']
-#     data["keywords"] = [rep(word, adb.eng) for word in adb.imgName]
-#     return render_template("association_answer.html",path=adb.imgurl, data = data, msg = msg)
-
-# def rep(st, word):
-#     st = st.replace("_", "")
-#     st = st.replace(word, "")
-#     return st
-
-# @app.route("/japanese", methods=['GET', 'POST'])
-# def japanese():
-#     try:
-#         uid = ini.uid
-#     except:
-#         return redirect(url_for('login'))
-#     if request.method == 'GET':
-#         w = jdb.getUserWords(ini.uid)
-#         timer.start_timer()
-#         if w == '':
-#             jdb.reset()
-#             return redirect(url_for('select'))
-        
-#         return render_template("japanese.html", word=w)
-#     else:
-#         print(request.form['mode'].split(','))
-#         act, query = request.form['mode'].split(',')
-#         if act == "translate":
-#             if jdb.eng==query:
-#                 w = jdb.jpn
-#             else:
-#                 w = jdb.eng
-#         #rememberボタンを押したとき
-#         elif act == "next":
-#             timer.record_time()
-#             if query == "remembered":
-#                 jdb.remembered()
-#             else:
-#                 jdb.notRemembered()
-#             if jdb.nextWord():
-#                 w = jdb.eng
-#             else:
-#                 return redirect(url_for("select"))
-
-#         # path = f'static/assets/{jdb.UID}/{jdb.eng}'
-#         return render_template("japanese.html", word = w)
-
 @app.route("/annotation", methods=["GET", "POST"])
 def annotaion():
     try:
@@ -244,11 +98,6 @@ def annotaion():
 
 @app.route("/annotation/translate", methods=["GET", "POST"])
 def annotation_translate():
-    # # translator = deepl.Translator("2c1055ac-4792-7f39-4a6d-e4a77e5763ec")
-    # result = translator.translate_text("\n".join(andb.defs), target_lang="JA")
-    # res = str(result).split("\n")
-    # print(result)
-    # print(type(res))
 
     return render_template("annotation.html", word=andb.eng, defs=andb.defs, path=andb.imgurl,
      isTrans=True, jpn=andb.jpn,  maxLen=andb.maxLen, idx=andb.index+1)
@@ -317,75 +166,6 @@ def test():
         if not tdb.next():
             return redirect(url_for("select"))
         return render_template("test.html", word=tdb.eng, defs=tdb.defs, maxLen=tdb.maxLen, idx=tdb.index+1)
-# @app.route("/feedback", methods=["GET", "POST"])
-# def feedback():
-#     data = {}
-#     try:
-#         uid = ini.uid
-#     except:
-#         return redirect(url_for('login'))
-#     if request.method == "GET":
-#         w = fdb.get_data(ini.uid)
-#         if w == '':
-#             return redirect(url_for('select'))
-        
-#         data['eng'] = fdb.eng
-#         data['jpn'] = fdb.jpn
-
-#         return render_template("feedback.html", path=fdb.imgurl, data=data)
-    
-#     else:
-#         fb = []
-#         for i in range(9):
-#             k = "img" + str(i)
-#             fb.append({
-#                 "url" : fdb.imgurl[i],
-#                 "feedback" : request.form[k]})
-#         fdb.submit(fb, fdb.eng)
-#         fdb.next()
-#         if not fdb.next():
-#                 return redirect(url_for("select"))
-            
-#         data['eng'] = fdb.eng
-#         data['jpn'] = fdb.jpn
-#         return render_template("feedback.html", path=fdb.imgurl, data=data)
-
-
-# @app.route("/feedback_association", methods=["GET", "POST"])
-# def feedback_association():
-#     data = {}
-#     try:
-#         uid = ini.uid
-#     except:
-#         return redirect(url_for('login'))
-#     if request.method == "GET":
-#         w = fadb.get_data(ini.uid)
-#         if w == '':
-#             return redirect(url_for('select'))
-        
-#         data['eng'] = fadb.eng
-#         data['jpn'] = fadb.jpn
-#         data['keywords'] = fadb.imgName
-#         data['length'] = len(fadb.imgName)
-#         return render_template("feedback_association.html", path=fadb.imgurl, data=data)
-    
-#     else:
-#         fb = []
-#         for i in range(len(fadb.imgurl)):
-#             k = "img" + str(i)
-#             fb.append({
-#                 "url" : fadb.imgurl[i],
-#                 "feedback" : request.form[k]})
-#         fadb.submit(fb, fadb.eng)
-#         fadb.next()
-#         if not fadb.next():
-#                 return redirect(url_for("select"))
-            
-#         data['eng'] = fadb.eng
-#         data['jpn'] = fadb.jpn
-#         data['keywords'] = fadb.imgName
-#         data['length'] = len(fadb.imgName)
-#         return render_template("feedback_association.html", path=fadb.imgurl, data=data)
 
 if __name__=="__main__":
     app.run(host="0.0.0.0", port=80,debug=True)
