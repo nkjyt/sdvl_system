@@ -203,6 +203,7 @@ class testDB():
         self.eng = ''
         self.index = 0
         self.maxLen = 100
+        self.allLog = []
     
     def get_data(self, UID):
         self.UID = UID
@@ -236,8 +237,17 @@ class testDB():
             "defs" : self.defs,
             "user_ans" : ans
         }
+        self.allLog.append(data)
 
         try:
             self.db.collection("test_log").document(self.UID).update({str(self.index): data})
         except:
             self.db.collection("test_log").document(self.UID).set({str(self.index): data})
+    
+    def submit_all_log(self):
+        dt_now = datetime.datetime.now()
+        stamp = dt_now.strftime('%Y_%m_%d_%H_%M_%S')
+        try:
+            self.db.collection("test_log_all").document(self.UID).update({stamp: self.allLog})
+        except:
+            self.db.collection("test_log_all").document(self.UID).set({stamp: self.allLog})

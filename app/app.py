@@ -164,6 +164,7 @@ def test():
         answer = request.form['answer']
         tdb.submit(answer)
         if not tdb.next():
+            tdb.submit_all_log()
             return redirect(url_for("select"))
         return render_template("test.html", word=tdb.eng, defs=tdb.defs, maxLen=tdb.maxLen, idx=tdb.index+1)
 
